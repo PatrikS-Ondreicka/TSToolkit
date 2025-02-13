@@ -23,32 +23,16 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Controller Details")
 	bool RegisterAllAtBeginPlay = true;
 
-	UPROPERTY(EditAnywhere, Category = "Controller Details")
-	int CarsSpawned = 0;
-
-	UPROPERTY(EditAnywhere, Category = "Controller Details")
-	float SpawnRate = 5.0f;
-
-	UPROPERTY(EditAnywhere, Category = "Controller Details")
-	bool SpawnAtOnce = false;
-
-private:
-	float _spawnCountDown;
-	int _carsToSpawnLeft;
-
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	virtual void _roundSetUp();
+	bool _canSourcesSpawn();
 
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	UFUNCTION()
-	void SpawnedCarCall();
-
 private:
 	void _registerAllSources();
-	void _roundSetUp();
-	void _disableAllSources();
 };

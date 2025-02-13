@@ -22,32 +22,14 @@ void ACarSpawnController::BeginPlay()
 	{
 		_registerAllSources();
 	}
-
-	_roundSetUp();
 }
 
 // Called every frame
 void ACarSpawnController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	if (_carsToSpawnLeft <= 0)
-	{
-		_disableAllSources();
-	}
-
-	if (_spawnCountDown <= 0)
-	{
-		_roundSetUp();
-	}
-	
-	_spawnCountDown -= DeltaTime;
 }
 
-void ACarSpawnController::SpawnedCarCall()
-{
-	_carsToSpawnLeft--;
-}
 
 void ACarSpawnController::_registerAllSources()
 {
@@ -69,27 +51,25 @@ void ACarSpawnController::_registerAllSources()
 
 void ACarSpawnController::_roundSetUp()
 {
-	_carsToSpawnLeft = CarsSpawned;
-	_spawnCountDown = SpawnRate;
-	for (ACarSource* source : Sources)
-	{
-		if (SpawnAtOnce)
-		{
-			source->SpawnRate = 1.0f;
-		}
-		else
-		{
-			source->SpawnRate = FMath::RandRange(0.0f, SpawnRate);
-		}
-		source->AutoSpawn = true;
-	}
+
 }
 
-void ACarSpawnController::_disableAllSources()
+bool ACarSpawnController::_canSourcesSpawn()
 {
-	for (ACarSource* source : Sources)
+	if (Sources.Num() <= 0)
 	{
-		source->AutoSpawn = false;
+		return false;
 	}
+
+	for (auto carSource : Sources)
+	{
+		if (!carSource->GetCanSpawn())
+		{
+			return false;
+		}
+	}
+
+	return true;
 }
+
 

@@ -45,9 +45,6 @@ void ACarSource::BeginPlay()
 
 	// Sort Car paths by probability
 	_initPath();
-
-	// Set up of count down
-	_spawnCountDown = SpawnRate;
 }
 
 // Called every frame
@@ -125,12 +122,6 @@ void ACarSource::SpawnCar()
 	// Init distance along spline
 	float initDistance = selectedPath->Path->GetDistanceAlongSplineAtLocation(carSpawLocation, ESplineCoordinateSpace::World);
 	spawnedCar->SetInitDistanceAlongSpline(initDistance);
-
-	// Send message to controller
-	if (Controller)
-	{
-		Controller->SpawnedCarCall();
-	}
 }
 
 void ACarSource::_onSpawnCheckBeginOverlap(

@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Car.h"
+#include "CarPath.h"
 #include "CarSource.generated.h"
 
 UCLASS(Blueprintable)
@@ -69,7 +70,7 @@ public:
 		_canSpawn = CanSpawnValue;
 	}
 
-	FORCEINLINE bool GetSetSpawn()
+	FORCEINLINE bool GetCanSpawn()
 	{
 		return _canSpawn;
 	}
