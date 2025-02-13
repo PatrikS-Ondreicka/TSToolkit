@@ -28,7 +28,6 @@ ATrafficLights::ATrafficLights()
 	RedLightMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Traffic Lights Red Light"));
 	RedLightMeshComponent->SetupAttachment(RootComponent);
 
-	_countdown = RedToGreenLightCountDownTime;
 }
 
 // Called when the game starts or when spawned
@@ -46,17 +45,6 @@ void ATrafficLights::BeginPlay()
 void ATrafficLights::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	// Simulation of light changes
-	_countdown -= DeltaTime;
-	if (_countdown <= 0)
-	{
-		_countdown = RedToGreenLightCountDownTime;
-		SetTrafficLightsState((CurrentState == ETrafficLightsStates::Red)
-			? ETrafficLightsStates::Green 
-			: ETrafficLightsStates::Red);
-
-	}
 }
 
 void ATrafficLights::SetTrafficLightsState(ETrafficLightsStates NewState)

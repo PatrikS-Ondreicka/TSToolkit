@@ -52,13 +52,8 @@ public:
 	ETrafficLightsStates CurrentState = ETrafficLightsStates::Green;
 
 	UPROPERTY(EditAnywhere, Category = "Traffic Lights Details")
-	float RedToGreenLightCountDownTime = 5.0;
-
-	UPROPERTY(EditAnywhere, Category = "Traffic Lights Details")
 	EOnLeavePriorityChange OnLeavePriorityChange = EOnLeavePriorityChange::None;
 
-private:
-	float _countdown;
 
 protected:
 	// Called when the game starts or when spawned
@@ -71,7 +66,7 @@ public:
 	UFUNCTION()
 	void SetTrafficLightsState(ETrafficLightsStates NewState);
 
-private:
+protected:
 	UFUNCTION()
 	virtual void _onBeginOverlap(
 		UPrimitiveComponent* OverlappedComponent,

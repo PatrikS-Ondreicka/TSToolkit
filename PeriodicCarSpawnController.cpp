@@ -5,14 +5,14 @@
 #include "CarSource.h"
 
 APeriodicCarSpawnController::APeriodicCarSpawnController() 
-	: ACarSpawnController()
+	: Super()
 {
 
 }
 
 void APeriodicCarSpawnController::BeginPlay() 
 {
-	ACarSpawnController::BeginPlay();
+	Super::BeginPlay();
 	if (Sources.Num() > 0)
 	{
 		_roundSetUp();
@@ -27,7 +27,7 @@ void APeriodicCarSpawnController::_roundSetUp()
 
 void APeriodicCarSpawnController::Tick(float DeltaTime)
 {
-	ACarSpawnController::Tick(DeltaTime);
+	Super::Tick(DeltaTime);
 
 	if (_spawnCountDown > 0) 
 	{
