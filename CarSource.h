@@ -37,9 +37,6 @@ public:
 	int MaxCarsCount = 5;
 
 	UPROPERTY(EditAnywhere, Category = "Source Details")
-	float SpawnRate = 5.0f;
-
-	UPROPERTY(EditAnywhere, Category = "Source Details")
 	class ACarSpawnController* Controller = nullptr;
 
 	// Car behaviour details
@@ -49,12 +46,8 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Spawned Car Details")
 	int CarMovementPriority = 100;
 
-	UPROPERTY(EditAnywhere, Category = "Spawned Car Details")
-	bool AutoSpawn = true;
-
 private:
 	// Spawning attributes
-	float _spawnCountDown;
 	bool _canSpawn = true;
 
 protected:
@@ -103,5 +96,4 @@ private:
 
 	ACarPath* _selectPath();
 	void _initPath();
-	void _autospawnTickAction(float DeltaTime);
 };

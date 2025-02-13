@@ -54,10 +54,6 @@ void ACarSource::BeginPlay()
 void ACarSource::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	if (AutoSpawn)
-	{
-		_autospawnTickAction(DeltaTime);
-	}
 }
 
 void ACarSource::OnConstruction(const FTransform& Transform)
@@ -203,20 +199,6 @@ void ACarSource::_initPath()
 		{
 			return left->Probability < right->Probability;
 		});
-}
-
-void ACarSource::_autospawnTickAction(float DeltaTime)
-{
-	if (_spawnCountDown >= SpawnRate)
-	{
-
-		SpawnCar();
-		_spawnCountDown = 0;
-	}
-	else
-	{
-		_spawnCountDown += DeltaTime;
-	}
 }
 
 
