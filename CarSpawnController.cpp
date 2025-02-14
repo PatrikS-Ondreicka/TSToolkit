@@ -38,7 +38,7 @@ void ACarSpawnController::_registerAllSources()
 
 	TArray<AActor*> found;
 
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACarSource::StaticClass(), found);
+	UGameplayStatics::GetAllActorsOfClass(world, ACarSource::StaticClass(), found);
 	for (AActor* actor : found)
 	{
 		ACarSource* source = Cast<ACarSource>(actor);

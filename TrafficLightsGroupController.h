@@ -21,6 +21,13 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Controller Details")
 	TArray<ATrafficLightsGroup*> TrafficLightsGroups;
 
+	UPROPERTY(EditAnywhere, Category = "Controller Details")
+	bool RegisterAllAtBeginPlay = true;
+
+private:
+	int _currentGroupIndex = 0;
+	float _currentGroupCountDown = 0.0f;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -29,4 +36,29 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	void NextGroup();
+
+	// Attribute getters
+	FORCEINLINE int GetCurrentGroupIndex()
+	{
+		return _currentGroupIndex;
+	}
+
+	FORCEINLINE float GetCurrentGroupCoundown()
+	{
+		return _currentGroupCountDown;
+	}
+
+	FORCEINLINE ATrafficLightsGroup* GetCurrentGroup()
+	{
+		if (TrafficLightsGroups.Num() <= 0)
+		{
+			return nullptr;
+		}
+		return TrafficLightsGroups[_currentGroupIndex];
+	}
+
+private:
+	void _registerAllGroups();
+	void _setStateForGroup(int Index, ETrafficLightsStates State);
 };
