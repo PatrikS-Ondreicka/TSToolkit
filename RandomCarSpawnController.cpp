@@ -9,31 +9,23 @@
 void ARandomCarSpawnController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	_currentIntervalCountdown -= DeltaTime;
-	_currentCounddownBetweenSpawns -= DeltaTime;
-
-	if (_currentCounddownBetweenSpawns <= 0)
+	if (_spawnCountdown > 0)
 	{
-		SpawnCar();
+		_spawnCountdown -= DeltaTime;
 	}
-
-	if (_currentIntervalCarsSpawned >= CarsSpawnedPerInterval)
+	else
 	{
-		_currentIntervalCountdown = TimeInterval;
-		_currentIntervalCarsSpawned = 0;
-		_currentCounddownBetweenSpawns = _currentTimeBetweenSpawns;
+		if (_canSourcesSpawn())
+		{
+			SpawnCar();
+			_roundSetUp();
+		}
 	}
 }
 
 void ARandomCarSpawnController::BeginPlay()
 {
 	Super::BeginPlay();
-
-	_currentIntervalCarsSpawned = 0;
-	_currentIntervalCountdown = TimeInterval;
-	_currentTimeBetweenSpawns = GetTimeBetweenSpawns();
-	_currentCounddownBetweenSpawns = _currentTimeBetweenSpawns;
 }
 
 ACarSource* ARandomCarSpawnController::GetRandomSource()
@@ -46,16 +38,6 @@ ACarSource* ARandomCarSpawnController::GetRandomSource()
 	int index = FMath::RandRange(0, Sources.Num() - 1);
 	ACarSource* randomSource =  Sources[index];
 	return randomSource;
-}
-
-float ARandomCarSpawnController::GetTimeBetweenSpawns()
-{
-	if (TimeInterval <= 0 || CarsSpawnedPerInterval <= 0)
-	{
-		return 0.0f;
-	}
-
-	return TimeInterval / CarsSpawnedPerInterval;
 }
 
 void ARandomCarSpawnController::SpawnCar()
@@ -71,7 +53,5 @@ void ARandomCarSpawnController::SpawnCar()
 		{
 			ERROR_MSG("Car spawn was unable to spawn a car");
 		}
-		_currentCounddownBetweenSpawns = _currentTimeBetweenSpawns;
-		_currentIntervalCarsSpawned++;
 	}
 }

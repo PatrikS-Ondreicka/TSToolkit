@@ -13,5 +13,5 @@ UCLASS()
 class TSTOOLKIT_API ATSToolkitGameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
-	
+
 };

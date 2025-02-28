@@ -22,6 +22,11 @@ void ACarSpawnController::BeginPlay()
 	{
 		_registerAllSources();
 	}
+
+	if (Sources.Num() > 0)
+	{
+		_roundSetUp();
+	}
 }
 
 // Called every frame
@@ -51,7 +56,7 @@ void ACarSpawnController::_registerAllSources()
 
 void ACarSpawnController::_roundSetUp()
 {
-
+	_spawnCountdown = SpawnRate;
 }
 
 bool ACarSpawnController::_canSourcesSpawn()

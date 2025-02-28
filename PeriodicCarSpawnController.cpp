@@ -13,15 +13,11 @@ APeriodicCarSpawnController::APeriodicCarSpawnController()
 void APeriodicCarSpawnController::BeginPlay() 
 {
 	Super::BeginPlay();
-	if (Sources.Num() > 0)
-	{
-		_roundSetUp();
-	}
 }
 
 void APeriodicCarSpawnController::_roundSetUp()
 {
-	_spawnCountDown = SpawnRate;
+	Super::_roundSetUp();
 }
 
 
@@ -29,9 +25,9 @@ void APeriodicCarSpawnController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (_spawnCountDown > 0) 
+	if (_spawnCountdown > 0) 
 	{
-		_spawnCountDown -= DeltaTime;
+		_spawnCountdown -= DeltaTime;
 		return;
 	}
 

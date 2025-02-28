@@ -20,18 +20,6 @@ public:
 	{
 	}
 
-	UPROPERTY(EditAnywhere, Category = "Controller Details")
-	float TimeInterval = 60;
-
-	UPROPERTY(EditAnywhere, Category = "Controller Details")
-	int CarsSpawnedPerInterval = 4;
-
-private:
-	int _currentIntervalCarsSpawned = 0;
-	float _currentIntervalCountdown = 0.0f;
-	float _currentTimeBetweenSpawns = 0;
-	float _currentCounddownBetweenSpawns = 0.0f;
-
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -39,6 +27,5 @@ public:
 protected:
 	virtual void BeginPlay() override;
 	virtual class ACarSource* GetRandomSource();
-	float GetTimeBetweenSpawns();
 	void SpawnCar();
 };

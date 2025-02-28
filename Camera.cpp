@@ -23,11 +23,9 @@ ACamera::ACamera()
 void ACamera::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	_screenshotCountdown -= DeltaTime;
-	if (_screenshotCountdown <= 0)
+	if (AutomaticScreenshots)
 	{
-		_screenshotCountdown = ScreenshotInterval;
-		TakeScreenshot();
+		_autoAction(DeltaTime);
 	}
 }
 
@@ -61,4 +59,14 @@ void ACamera::TakeScreenshot()
 
 	// Take screenshot
 	FScreenshotRequest::RequestScreenshot(filepath, false, false);
+}
+
+void ACamera::_autoAction(float DeltaTime)
+{
+	_screenshotCountdown -= DeltaTime;
+	if (_screenshotCountdown <= 0)
+	{
+		_screenshotCountdown = ScreenshotInterval;
+		TakeScreenshot();
+	}
 }

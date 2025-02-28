@@ -21,6 +21,9 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Camera details")
 	FString CameraName = "Default";
 
+	UPROPERTY(EditAnywhere, Category = "Camera details")
+	bool AutomaticScreenshots = false;
+
 	UPROPERTY(EditAnywhere, Category = "Screenshot details")
 	float ScreenshotInterval = 10.0f;
 
@@ -36,4 +39,7 @@ public:
 
 	UFUNCTION()
 	void TakeScreenshot();
+
+private:
+	void _autoAction(float DeltaTime);
 };

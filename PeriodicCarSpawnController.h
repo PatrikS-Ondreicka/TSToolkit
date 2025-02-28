@@ -17,12 +17,6 @@ class TSTOOLKIT_API APeriodicCarSpawnController : public ACarSpawnController
 public:
 	APeriodicCarSpawnController();
 
-	UPROPERTY(EditAnywhere, Category = "Controller Details")
-	float SpawnRate = 5.0f;
-	
-private:
-	float _spawnCountDown;
-
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

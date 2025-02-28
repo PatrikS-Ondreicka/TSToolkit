@@ -4,41 +4,45 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "CarSpawnController.generated.h"
+#include "ScreenshotController.generated.h"
 
-class ACarSource;
+class ACamera;
 
 UCLASS()
-class TSTOOLKIT_API ACarSpawnController : public AActor
+class TSTOOLKIT_API AScreenshotController : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	ACarSpawnController();
+	AScreenshotController();
 
 	UPROPERTY(EditAnywhere, Category = "Controller Details")
-	TArray<ACarSource*> Sources;
+	TArray<ACamera*> Cameras;
 
 	UPROPERTY(EditAnywhere, Category = "Controller Details")
 	bool RegisterAllAtBeginPlay = true;
 
 	UPROPERTY(EditAnywhere, Category = "Controller Details")
-	float SpawnRate = 10.0f;
+	float ScreenshotInterval = 10.0f;
+
+	UPROPERTY(EditAnywhere, Category = "Controller Details")
+	float DelayBetweenScreenshots = 0.1f;
+
+private:
+	float _screenshotCountdown;
+	float _currentCameraCountdown;
+	int _screenshotsTakenCount;
+	int _currentCameraIndex;
+	ACamera* _currentCamera;
+
 
 protected:
-	float _spawnCountdown;
-
-protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-	virtual void _roundSetUp();
-	bool _canSourcesSpawn();
 
 public:	
-	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 private:
-	void _registerAllSources();
+	void _registerAllCameras();
 };
