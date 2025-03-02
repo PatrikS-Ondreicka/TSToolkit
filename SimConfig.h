@@ -29,6 +29,10 @@ public:
 
 	USimConfig();
 
+	// File details
+	static const FString ConfigFileName;
+	static const FString ConfigDirPath;
+
 	// Level details
 	static const FString LevelDirrPath;
 
@@ -67,4 +71,9 @@ public:
 		return LevelDirrPath + RelativeLevelPath+ "." + RelativeLevelPath;
 	}
 
+	UFUNCTION(BlueprintCallable)
+	void SaveConfig();
+
+	UFUNCTION(BlueprintCallable)
+	void LoadConfig(FString filename);
 };

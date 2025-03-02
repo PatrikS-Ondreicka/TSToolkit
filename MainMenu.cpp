@@ -2,6 +2,7 @@
 
 
 #include "MainMenu.h"
+#include "TSToolkitGameMode.h"
 #include "Kismet/GameplayStatics.h"
 
 typedef UGameplayStatics GS;
@@ -14,7 +15,19 @@ UMainMenu::UMainMenu(const FObjectInitializer& ObjectInitializer)
 
 void UMainMenu::StartButtonClick()
 {
-	GS::OpenLevel(this, FName(_simConfig->GetLevelPath()), true, TEXT("game='/Script/TSToolkit.TSToolkitGameModeBase'"));
+	FString levelPath = _simConfig->GetLevelPath();
+	UWorld* world = GetWorld();
+	AGameModeBase* GameMode = GS::GetGameMode(world);
+	ATSToolkitGameMode* tsToolkitGameMode = Cast<ATSToolkitGameMode>(GameMode);
+	_simConfig->SaveConfig();
+	if (tsToolkitGameMode)
+	{
+		tsToolkitGameMode->LoadLevel(levelPath);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Game mode is null"));
+	}
 }
 
 TArray<FString> UMainMenu::GetLevels()
@@ -25,4 +38,9 @@ TArray<FString> UMainMenu::GetLevels()
 TArray<FString> UMainMenu::GetCarSpawnControllerClasses()
 {
 	return USimConfig::GetCarSpawnControllerClassesNames();
+}
+
+void UMainMenu::SaveConfig()
+{
+	_simConfig->SaveConfig();
 }

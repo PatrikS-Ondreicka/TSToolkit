@@ -4,9 +4,15 @@
 #include "SimConfig.h"
 #include "AssetRegistry/AssetRegistryModule.h"
 #include "AssetRegistry/IAssetRegistry.h"
+#include "Serialization/JsonSerializer.h"
+#include "Serialization/JsonWriter.h"
+#include "Dom/JsonObject.h"
+#include "Misc/Paths.h"
 
 const FString USimConfig::LevelDirrPath = "/Game/SimBlank/Levels/";
 const FString USimConfig::_MainMenuLevelName = "MainMenu";
+const FString USimConfig::ConfigFileName = "SimConfig.json";
+const FString USimConfig::ConfigDirPath = FPaths::ProjectDir() + "Configs/";
 
 USimConfig::USimConfig()
 {
@@ -72,4 +78,40 @@ FString USimConfig::GetCarSpawnControllerClassString(ECarSpawnControllerClasses 
 	}
 
 	throw "Invalid CarSpawnController class name";
+}
+
+void USimConfig::SaveConfig()
+{
+	TSharedPtr<FJsonObject> jsonObject = MakeShareable(new FJsonObject());
+	jsonObject->SetStringField(TEXT("RelativeLevelPath"), RelativeLevelPath);
+	jsonObject->SetNumberField(TEXT("SimulationDuration"), SimulationDuration);
+	jsonObject->SetStringField(TEXT("ControllerClassName"), GetCarSpawnControllerClassString(ControllerClassName));
+	jsonObject->SetNumberField(TEXT("CarsSpawnRate"), CarsSpawnRate);
+	jsonObject->SetNumberField(TEXT("ScreenshotInterval"), ScreenshotInterval);
+	jsonObject->SetNumberField(TEXT("DelayBetweenScreenshots"), DelayBetweenScreenshots);
+
+	FString jsonString;
+	TSharedRef<TJsonWriter<TCHAR>> jsonWriter = TJsonWriterFactory<>::Create(&jsonString);
+	FJsonSerializer::Serialize(jsonObject.ToSharedRef(), jsonWriter);
+	FString saveFilePath = ConfigDirPath + ConfigFileName;
+	FFileHelper::SaveStringToFile(jsonString, *saveFilePath);
+}
+
+void USimConfig::LoadConfig(FString filename)
+{
+	FString loadFilePath = ConfigDirPath + filename;
+	FString jsonString;
+	FFileHelper::LoadFileToString(jsonString, *loadFilePath);
+
+	TSharedPtr<FJsonObject> jsonObject;
+	TSharedRef<TJsonReader<TCHAR>> jsonReader = TJsonReaderFactory<TCHAR>::Create(jsonString);
+	if (FJsonSerializer::Deserialize(jsonReader, jsonObject))
+	{
+		RelativeLevelPath = jsonObject->GetStringField(TEXT("RelativeLevelPath"));
+		SimulationDuration = jsonObject->GetNumberField(TEXT("SimulationDuration"));
+		ControllerClassName = GetCarSpawnControllerClassByName(jsonObject->GetStringField(TEXT("ControllerClassName")));
+		CarsSpawnRate = jsonObject->GetNumberField(TEXT("CarsSpawnRate"));
+		ScreenshotInterval = jsonObject->GetNumberField(TEXT("ScreenshotInterval"));
+		DelayBetweenScreenshots = jsonObject->GetNumberField(TEXT("DelayBetweenScreenshots"));
+	}
 }

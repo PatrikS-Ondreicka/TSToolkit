@@ -122,4 +122,7 @@ public:
 
 	UFUNCTION(BlueprintPure)
 	TArray<FString> GetCarSpawnControllerClasses();
+
+	UFUNCTION(BlueprintCallable)
+	void SaveConfig();
 };
