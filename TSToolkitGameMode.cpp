@@ -6,6 +6,10 @@
 #include "Engine/World.h"
 #include "SimConfig.h"
 #include "MainMenu.h"
+#include "CarSpawnController.h"
+#include "PeriodicCarSpawnController.h"
+#include "RandomCarSpawnController.h"
+#include "ScreenshotController.h"
 
 typedef UGameplayStatics GS;
 
@@ -25,7 +29,9 @@ void ATSToolkitGameMode::BeginPlay()
 	}
 	else
 	{
-		// Load the level
+		USimConfig* config = NewObject<USimConfig>();
+		config->LoadConfig(USimConfig::ConfigFileName);
+		LoadLevel(config);
 	}
 }
 
@@ -50,13 +56,11 @@ void ATSToolkitGameMode::LoadMainMenu()
 	}
 }
 
-void ATSToolkitGameMode::LoadLevel(FString levelName)
+void ATSToolkitGameMode::LoadLevel(USimConfig* config)
 {
 	_levelVieportSetup();
 	UWorld* world = GetWorld();
-	UGameplayStatics::OpenLevel(world, FName(*levelName), true);
-	USimConfig* config = NewObject<USimConfig>();
-	config->LoadConfig(USimConfig::ConfigFileName);
+	_setUpLevel(config);
 }
 
 void ATSToolkitGameMode::_UIViewportSetup(UUserWidget* widget)
@@ -77,4 +81,44 @@ void ATSToolkitGameMode::_levelVieportSetup()
 	FInputModeGameOnly InputMode;
 	controller->SetInputMode(InputMode);
 	controller->SetShowMouseCursor(false);
+}
+
+void ATSToolkitGameMode::_setUpLevel(USimConfig* config)
+{
+	_setUpCarSpawnController(config);
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("spawn config done"));
+	_setUpScreenshotController(config);
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("screenshot config done"));
+}
+
+void ATSToolkitGameMode::_setUpCarSpawnController(USimConfig* config)
+{
+	UWorld* world = GetWorld();
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, world->GetMapName());
+	ECarSpawnControllerClasses controllerClassName = config->ControllerClassName;
+	ACarSpawnController* controller = nullptr;
+	if (controllerClassName == ECarSpawnControllerClasses::Random)
+	{
+		controller = world->SpawnActor<ARandomCarSpawnController>(ARandomCarSpawnController::StaticClass());
+	}
+	else if (controllerClassName == ECarSpawnControllerClasses::Periodic)
+	{
+		controller = world->SpawnActor<APeriodicCarSpawnController>(APeriodicCarSpawnController::StaticClass());
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Invalid controller class name"));
+		return;
+	}
+	controller->RegisterAllAtBeginPlay = true;
+	controller->SpawnRate = config->CarsSpawnRate;
+}
+
+void ATSToolkitGameMode::_setUpScreenshotController(USimConfig* config)
+{
+	UWorld* world = GetWorld();
+	AScreenshotController* controller = world->SpawnActor<AScreenshotController>(AScreenshotController::StaticClass());
+	controller->RegisterAllAtBeginPlay = true;
+	controller->ScreenshotInterval = config->ScreenshotInterval;
+	controller->DelayBetweenScreenshots = config->DelayBetweenScreenshots;
 }

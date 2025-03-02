@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "SimConfig.h"
 #include "GameFramework/GameModeBase.h"
 #include "TSToolkitGameMode.generated.h"
 
@@ -28,9 +29,14 @@ public:
 	virtual void BeginPlay() override;
 	bool IsMainMenu() const;
 	void LoadMainMenu();
-	void LoadLevel(FString levelName);
+	void LoadLevel(USimConfig* config);
 
 private:
 	void _UIViewportSetup(UUserWidget* widget);
 	void _levelVieportSetup();
+
+	// level setup functions
+	void _setUpLevel(USimConfig* config);
+	void _setUpCarSpawnController(USimConfig* config);
+	void _setUpScreenshotController(USimConfig* config);
 };

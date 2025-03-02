@@ -22,7 +22,7 @@ void UMainMenu::StartButtonClick()
 	_simConfig->SaveConfig();
 	if (tsToolkitGameMode)
 	{
-		tsToolkitGameMode->LoadLevel(levelPath);
+		GS::OpenLevel(world, FName(*levelPath));
 	}
 	else
 	{
