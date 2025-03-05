@@ -72,6 +72,17 @@ public:
 		return _simConfig->DelayBetweenScreenshots;
 	}
 
+	UFUNCTION(BlueprintPure)
+	FORCEINLINE bool GetIsNight()
+	{
+		return _simConfig->IsNight;
+	}
+
+	UFUNCTION(BlueprintPure)
+	FORCEINLINE bool GetIsOvercast()
+	{
+		return _simConfig->IsOvercast;
+	}
 
 	// Setters
 	UFUNCTION(BlueprintCallable)
@@ -114,6 +125,18 @@ public:
 	FORCEINLINE void SetDelayBetweenScreenshots(float value)
 	{
 		_simConfig->DelayBetweenScreenshots = value;
+	}
+
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE void SetIsNight(bool value)
+	{
+		_simConfig->IsNight = value;
+	}
+
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE void SetIsOvercast(bool value)
+	{
+		_simConfig->IsOvercast = value;
 	}
 
 	// Aditional functions

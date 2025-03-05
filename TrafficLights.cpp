@@ -4,6 +4,7 @@
 #include "TrafficLights.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/BoxComponent.h"
+#include "Components/SpotLightComponent.h"
 #include "Car.h"
 
 // Sets default values
@@ -19,14 +20,14 @@ ATrafficLights::ATrafficLights()
 	TrafficLightsMeshComponent->SetupAttachment(RootComponent);
 
 	// Lights Set Up
-	GreenLightMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Traffic Lights Green Light"));
-	GreenLightMeshComponent->SetupAttachment(RootComponent);
+	GreenLightComponent = CreateDefaultSubobject<USpotLightComponent>(TEXT("Green Light Spot Light"));
+	GreenLightComponent->SetupAttachment(TrafficLightsMeshComponent);
 
-	OrangeLightMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Traffic Lights Orange Light"));
-	OrangeLightMeshComponent->SetupAttachment(RootComponent);
+	OrangeLightComponent = CreateDefaultSubobject<USpotLightComponent>(TEXT("Orange Light Spot Light"));
+	OrangeLightComponent->SetupAttachment(TrafficLightsMeshComponent);
 
-	RedLightMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Traffic Lights Red Light"));
-	RedLightMeshComponent->SetupAttachment(RootComponent);
+	RedLightComponent = CreateDefaultSubobject<USpotLightComponent>(TEXT("Red Light Spot Light"));
+	RedLightComponent->SetupAttachment(TrafficLightsMeshComponent);
 
 }
 
@@ -50,9 +51,9 @@ void ATrafficLights::Tick(float DeltaTime)
 void ATrafficLights::SetTrafficLightsState(ETrafficLightsStates NewState)
 {
 	CurrentState = NewState;
-	GreenLightMeshComponent->SetVisibility(ETrafficLightsStates::Green == NewState);
-	OrangeLightMeshComponent->SetVisibility(ETrafficLightsStates::Orange == NewState);
-	RedLightMeshComponent->SetVisibility(ETrafficLightsStates::Red == NewState);
+	GreenLightComponent->SetVisibility(ETrafficLightsStates::Green == NewState);
+	OrangeLightComponent->SetVisibility(ETrafficLightsStates::Orange == NewState);
+	RedLightComponent->SetVisibility(ETrafficLightsStates::Red == NewState);
 	_stateChange(NewState);
 }
 

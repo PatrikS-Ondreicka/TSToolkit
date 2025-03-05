@@ -38,14 +38,17 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Traffic Lights Components")
 	class UStaticMeshComponent* TrafficLightsMeshComponent;
 
-	UPROPERTY(EditAnywhere, Category = "Traffic Lights Components")
-	class UStaticMeshComponent* GreenLightMeshComponent;
+	// Green light components
+	UPROPERTY(EditAnywhere,  Category = "Traffic Lights Components")
+	class USpotLightComponent* GreenLightComponent;
 
+	// Orange light components
 	UPROPERTY(EditAnywhere, Category = "Traffic Lights Components")
-	class UStaticMeshComponent* OrangeLightMeshComponent;
+	class USpotLightComponent* OrangeLightComponent;
 
+	// Red light components
 	UPROPERTY(EditAnywhere, Category = "Traffic Lights Components")
-	class UStaticMeshComponent* RedLightMeshComponent;
+	class USpotLightComponent* RedLightComponent;
 
 	// Traffic Lights Details
 	UPROPERTY(EditAnywhere, Category = "Traffic Lights Details")

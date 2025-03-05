@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "SimConfig.h"
 #include "GameFramework/GameModeBase.h"
+#include "WeatherController.h"
 #include "TSToolkitGameMode.generated.h"
 
 /**
@@ -19,11 +20,14 @@ public:
 	ATSToolkitGameMode();
 
 	// Main menu details
-	UPROPERTY(EditAnywhere, Category = "Main menu details")
+	UPROPERTY(VisibleAnywhere, Category = "Main menu details")
 	FString MainMenuLevelName = "MainMenu";
 
-	UPROPERTY(EditAnywhere, Category = "Main menu details")
+	UPROPERTY(VisibleAnywhere, Category = "Main menu details")
 	TSubclassOf<UUserWidget> MainMenuWidgetClass;
+
+	UPROPERTY(VisibleAnywhere, Category = "Weather controller details")
+	TSubclassOf<AWeatherController> WeatherControllerClass;
 
 public:
 	virtual void BeginPlay() override;
@@ -39,4 +43,5 @@ private:
 	void _setUpLevel(USimConfig* config);
 	void _setUpCarSpawnController(USimConfig* config);
 	void _setUpScreenshotController(USimConfig* config);
+	void _setUpWeatherController(USimConfig* config);
 };

@@ -118,6 +118,14 @@ void ACarSource::SpawnCar()
 	spawnedCar->SetPath(selectedPath);
 	spawnedCar->StaticSpeed = CarStaticSpeed;
 	spawnedCar->SetMovementPriority(CarMovementPriority);
+	if (IsNight)
+	{
+		spawnedCar->TurnLightsOn();
+	}
+	else 
+	{
+		spawnedCar->TurnLightsOff();
+	}
 	
 	// Init distance along spline
 	float initDistance = selectedPath->Path->GetDistanceAlongSplineAtLocation(carSpawLocation, ESplineCoordinateSpace::World);

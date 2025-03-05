@@ -5,6 +5,7 @@
 #include "Components/StaticMeshComponent.h"
 #include "Components/BoxComponent.h"
 #include "Components/SplineComponent.h"
+#include "Components/SpotLightComponent.h"
 #include "CarPath.h"
 
 #define MSG(str) GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, TEXT(str));
@@ -23,6 +24,12 @@ ACar::ACar()
 
 	CarMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Car Static Mesh"));
 	CarMeshComponent->SetupAttachment(RootComponent);
+
+	LeftSpotLight = CreateDefaultSubobject<USpotLightComponent>(TEXT("Car Left Spot Light"));
+	LeftSpotLight->SetupAttachment(CarMeshComponent);
+
+	RigtSpotLight = CreateDefaultSubobject<USpotLightComponent>(TEXT("Car Right Spot Light"));
+	RigtSpotLight->SetupAttachment(CarMeshComponent);
 
 	_path = nullptr;
 }
@@ -62,6 +69,20 @@ void ACar::Tick(float DeltaTime)
 void ACar::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
+}
+
+void ACar::TurnLightsOn()
+{
+	LeftSpotLight->SetVisibility(true);
+	RigtSpotLight->SetVisibility(true);
+	_isLightsOn = true;
+}
+
+void ACar::TurnLightsOff()
+{
+	LeftSpotLight->SetVisibility(false);
+	RigtSpotLight->SetVisibility(false);
+	_isLightsOn = false;
 }
 
 void ACar::_moveToALocation(FVector location, float speed, float deltaTime)

@@ -11,12 +11,17 @@
 #include "RandomCarSpawnController.h"
 #include "ScreenshotController.h"
 
+// Delete macro if testing of level isn't needed
+// #define TESTING
+
 typedef UGameplayStatics GS;
 
 ATSToolkitGameMode::ATSToolkitGameMode()
 {
-	ConstructorHelpers::FClassFinder<UUserWidget> menuWidgetClass(TEXT("WidgetBlueprint'/Game/BP/UI/BP_MainMenu.BP_MainMenu_C'"));
-	MainMenuWidgetClass = menuWidgetClass.Class;
+	ConstructorHelpers::FClassFinder<UUserWidget> mainMenuWidgetClass(TEXT("WidgetBlueprint'/Game/BP/UI/BP_MainMenu.BP_MainMenu_C'"));
+	ConstructorHelpers::FClassFinder<AWeatherController> weatherControllerClass(TEXT("Engine.Blueprint'/Game/BP/BP_WeatherController.BP_WeatherController'"));
+	MainMenuWidgetClass = mainMenuWidgetClass.Class;
+	WeatherControllerClass = weatherControllerClass.Class;
 }
 
 void ATSToolkitGameMode::BeginPlay()
@@ -29,9 +34,11 @@ void ATSToolkitGameMode::BeginPlay()
 	}
 	else
 	{
+#ifndef TESTING
 		USimConfig* config = NewObject<USimConfig>();
 		config->LoadConfig(USimConfig::ConfigFileName);
 		LoadLevel(config);
+#endif
 	}
 }
 
@@ -86,9 +93,8 @@ void ATSToolkitGameMode::_levelVieportSetup()
 void ATSToolkitGameMode::_setUpLevel(USimConfig* config)
 {
 	_setUpCarSpawnController(config);
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("spawn config done"));
 	_setUpScreenshotController(config);
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("screenshot config done"));
+	_setUpWeatherController(config);
 }
 
 void ATSToolkitGameMode::_setUpCarSpawnController(USimConfig* config)
@@ -121,4 +127,25 @@ void ATSToolkitGameMode::_setUpScreenshotController(USimConfig* config)
 	controller->RegisterAllAtBeginPlay = true;
 	controller->ScreenshotInterval = config->ScreenshotInterval;
 	controller->DelayBetweenScreenshots = config->DelayBetweenScreenshots;
+}
+
+void ATSToolkitGameMode::_setUpWeatherController(USimConfig* config)
+{
+	TArray<AActor*> found;
+	GS::GetAllActorsOfClass(GetWorld(), AWeatherController::StaticClass(), found);
+	if (found.Num() > 1)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("More than one weather controller present in level"));
+		return;
+	}
+
+	AWeatherController* controller = Cast<AWeatherController>(found[0]);
+	if (!controller)
+	{
+		controller = GetWorld()->SpawnActor<AWeatherController>(WeatherControllerClass);
+	}
+
+	EDayTimeTypes dayTime = (config->IsNight) ? EDayTimeTypes::Night : EDayTimeTypes::Day ;
+	EOvercastTypes overcast = (config->IsOvercast) ? EOvercastTypes::Overcast : EOvercastTypes::Clear;
+	controller->SetWeather(dayTime, overcast);
 }

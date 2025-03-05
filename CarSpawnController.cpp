@@ -27,6 +27,8 @@ void ACarSpawnController::BeginPlay()
 	{
 		_roundSetUp();
 	}
+
+	SetNight(_isNight);
 }
 
 // Called every frame
@@ -35,6 +37,15 @@ void ACarSpawnController::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
+
+void ACarSpawnController::SetNight(bool state)
+{
+	_isNight = state;
+	for (ACarSource* source : Sources)
+	{
+		source->IsNight = state;
+	}
+}
 
 void ACarSpawnController::_registerAllSources()
 {

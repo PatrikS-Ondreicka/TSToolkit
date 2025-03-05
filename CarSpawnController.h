@@ -26,8 +26,11 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Controller Details")
 	float SpawnRate = 10.0f;
 
+	
+
 protected:
 	float _spawnCountdown;
+	bool _isNight = false;
 
 protected:
 	// Called when the game starts or when spawned
@@ -38,6 +41,12 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	UFUNCTION(BlueprintPure)
+	FORCEINLINE bool IsNight() const { return _isNight; }
+
+	UFUNCTION(BlueprintCallable)
+	void SetNight(bool state);
 
 private:
 	void _registerAllSources();

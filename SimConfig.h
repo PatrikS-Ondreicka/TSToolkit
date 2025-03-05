@@ -57,6 +57,12 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Screenshot details")
 	float DelayBetweenScreenshots;
 
+	UPROPERTY(EditAnywhere, Category = "Weather details")
+	bool IsNight;
+
+	UPROPERTY(EditAnywhere, Category = "Weather details")
+	bool IsOvercast;
+
 	// Static methods
 public:
 	static TArray<FString> GetLevelNames();

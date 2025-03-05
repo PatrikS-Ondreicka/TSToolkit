@@ -40,6 +40,9 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Source Details")
 	class ACarSpawnController* Controller = nullptr;
 
+	UPROPERTY(EditAnywhere, Category = "Source Details")
+	bool IsNight = false;
+
 	// Car behaviour details
 	UPROPERTY(EditAnywhere, Category = "Spawned Car Details")
 	float CarStaticSpeed = 10;

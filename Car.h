@@ -15,6 +15,8 @@ public:
 	// Sets default values for this pawn's properties
 	ACar();
 
+
+	// Components
 	UPROPERTY(EditAnywhere, Category = "Car Components")
 	class UBoxComponent* CarBoxRoot;
 
@@ -24,8 +26,19 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Car Components")
 	class UStaticMeshComponent* CarMeshComponent;
 
-	UPROPERTY(EditAnywhere, Category="Car Stats")
+	UPROPERTY(EditAnywhere, Category = "Car Components")
+	class USpotLightComponent* LeftSpotLight;
+
+	UPROPERTY(EditAnywhere, Category = "Car Components")
+	class USpotLightComponent* RigtSpotLight;
+
+	// Car Details
+	UPROPERTY(EditAnywhere, Category="Car Details")
 	float StaticSpeed = 50;
+
+protected:
+	bool _isLightsOn = false;
+
 
 private:
 	class ACarPath* _path;
@@ -51,6 +64,8 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	void TurnLightsOn();
+	void TurnLightsOff();
 	
 	FORCEINLINE bool HasLargerPriority(ACar* Other)
 	{
@@ -90,6 +105,11 @@ public:
 	FORCEINLINE void SetReachedDestination(bool NewValue)
 	{
 		_reachedDestination = NewValue;
+	}
+
+	FORCEINLINE bool GetLigtOn()
+	{
+		return _isLightsOn;
 	}
 
 private:
