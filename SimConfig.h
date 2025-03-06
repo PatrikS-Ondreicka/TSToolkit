@@ -57,11 +57,15 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Screenshot details")
 	float DelayBetweenScreenshots;
 
+	// Weather details
 	UPROPERTY(EditAnywhere, Category = "Weather details")
 	bool IsNight;
 
 	UPROPERTY(EditAnywhere, Category = "Weather details")
 	bool IsOvercast;
+
+	UPROPERTY(EditAnywhere, Category = "Weather details")
+	bool IsRain;
 
 	// Static methods
 public:

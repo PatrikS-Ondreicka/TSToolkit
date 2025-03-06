@@ -91,6 +91,7 @@ void USimConfig::SaveConfig()
 	jsonObject->SetNumberField(TEXT("DelayBetweenScreenshots"), DelayBetweenScreenshots);
 	jsonObject->SetBoolField(TEXT("IsNight"), IsNight);
 	jsonObject->SetBoolField(TEXT("IsOvercast"), IsOvercast);
+	jsonObject->SetBoolField(TEXT("IsRain"), IsRain);
 
 	FString jsonString;
 	TSharedRef<TJsonWriter<TCHAR>> jsonWriter = TJsonWriterFactory<>::Create(&jsonString);
@@ -117,5 +118,6 @@ void USimConfig::LoadConfig(FString filename)
 		DelayBetweenScreenshots = jsonObject->GetNumberField(TEXT("DelayBetweenScreenshots"));
 		IsNight = jsonObject->GetBoolField(TEXT("IsNight"));
 		IsOvercast = jsonObject->GetBoolField(TEXT("IsOvercast"));
+		IsRain = jsonObject->GetBoolField(TEXT("IsRain"));
 	}
 }

@@ -20,6 +20,13 @@ enum class EOvercastTypes
 	Clear
 };
 
+UENUM()
+enum class ERainTypes
+{
+	NoRain,
+	Rain
+};
+
 UCLASS()
 class TSTOOLKIT_API AWeatherController : public AActor
 {
@@ -38,12 +45,18 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Weather components")
 	class USkyAtmosphereComponent* SkyAtmosphere;
 
+	UPROPERTY(EditAnywhere, Category = "Weather components")
+	class UNiagaraComponent* RainComponent;
+
 	// Weather settings
 	UPROPERTY(EditAnywhere, Category = "Weather settings")
 	EDayTimeTypes CurrentDayTime = EDayTimeTypes::Day;
 
 	UPROPERTY(EditAnywhere, Category = "Weather settings")
 	EOvercastTypes CurrentOvercast = EOvercastTypes::Clear;
+
+	UPROPERTY(EditAnywhere, Category = "Weather settings")
+	ERainTypes CurrentRain = ERainTypes::NoRain;
 	
 	// Read only sun default values
 	UPROPERTY(VisibleAnywhere, Category = "Sun defaul values")
@@ -86,6 +99,8 @@ private:
 	void _turnOffLamps();
 	void _setNightForControllers(bool state);
 	void _initVolumetricCloud();
+	void _setRain();
+	void _setNoRain();
 
 protected:
 	virtual void BeginPlay() override;
@@ -93,7 +108,12 @@ protected:
 public:
 	virtual void Tick(float DeltaTime) override;
 
+	void OnConstruction(const FTransform& Transform) override;
+
 	UFUNCTION(BlueprintCallable)
 	void SetWeather(EDayTimeTypes time, EOvercastTypes overcast);
+
+	UFUNCTION(BlueprintCallable)
+	void SetRain(ERainTypes rain);
 
 };

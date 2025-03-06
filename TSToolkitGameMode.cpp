@@ -12,7 +12,7 @@
 #include "ScreenshotController.h"
 
 // Delete macro if testing of level isn't needed
-// #define TESTING
+#define TESTING
 
 typedef UGameplayStatics GS;
 
@@ -147,5 +147,6 @@ void ATSToolkitGameMode::_setUpWeatherController(USimConfig* config)
 
 	EDayTimeTypes dayTime = (config->IsNight) ? EDayTimeTypes::Night : EDayTimeTypes::Day ;
 	EOvercastTypes overcast = (config->IsOvercast) ? EOvercastTypes::Overcast : EOvercastTypes::Clear;
+	ERainTypes rain = (config->IsRain) ? ERainTypes::Rain : ERainTypes::NoRain;
 	controller->SetWeather(dayTime, overcast);
 }

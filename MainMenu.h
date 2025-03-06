@@ -84,6 +84,12 @@ public:
 		return _simConfig->IsOvercast;
 	}
 
+	UFUNCTION(BlueprintPure)
+	FORCEINLINE bool GetIsRain()
+	{
+		return _simConfig->IsRain;
+	}
+
 	// Setters
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE void SetRelativeLevelPath(FString value)
@@ -137,6 +143,12 @@ public:
 	FORCEINLINE void SetIsOvercast(bool value)
 	{
 		_simConfig->IsOvercast = value;
+	}
+
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE void SetIsRain(bool value)
+	{
+		_simConfig->IsRain = value;
 	}
 
 	// Aditional functions

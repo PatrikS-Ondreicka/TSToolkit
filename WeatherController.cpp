@@ -10,6 +10,8 @@
 #include "Engine/World.h"
 #include "Lamp.h"
 #include "CarSpawnController.h"
+#include "NiagaraFunctionLibrary.h"
+#include "NiagaraComponent.h"
 
 typedef UGameplayStatics GS;
 
@@ -25,8 +27,9 @@ AWeatherController::AWeatherController()
 	VolumetricCloud->SetupAttachment(Sun);
 
 	SkyAtmosphere = CreateDefaultSubobject<USkyAtmosphereComponent>(TEXT("SkyAtmosphere"));
-	SkyAtmosphere->SetupAttachment(Sun);
+	SkyAtmosphere->SetupAttachment(Sun); 
 
+	RainComponent = CreateDefaultSubobject<UNiagaraComponent>(TEXT("Rain component"));
 	_initVolumetricCloud();
 }
 
@@ -35,12 +38,19 @@ void AWeatherController::BeginPlay()
 {
 	Super::BeginPlay();
 	SetWeather(CurrentDayTime, CurrentOvercast);
+	SetRain(CurrentRain);
 }
 
 // Called every frame
 void AWeatherController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+}
+
+void AWeatherController::OnConstruction(const FTransform& Transform)
+{
+	SetWeather(CurrentDayTime, CurrentOvercast);
+	SetRain(CurrentRain);
 }
 
 void AWeatherController::SetWeather(EDayTimeTypes time, EOvercastTypes overcast)
@@ -55,6 +65,21 @@ void AWeatherController::SetWeather(EDayTimeTypes time, EOvercastTypes overcast)
 	}
 	else {
 		UE_LOG(LogTemp, Warning, TEXT("Invalid day time"));
+	}
+}
+
+void AWeatherController::SetRain(ERainTypes rain)
+{
+	if (rain == ERainTypes::NoRain)
+	{
+		_setNoRain();
+	}
+	else if (rain == ERainTypes::Rain)
+	{
+		_setRain();
+	}
+	else {
+		UE_LOG(LogTemp, Warning, TEXT("Invalid rain type"));
 	}
 }
 
@@ -152,6 +177,22 @@ void AWeatherController::_initVolumetricCloud()
 		VolumetricCloud->SetLayerHeight(2.0f);
 		VolumetricCloud->SetLayerBottomAltitude(2.0f);
 		VolumetricCloud->SetTracingMaxDistance(50.0f);
+	}
+}
+
+void AWeatherController::_setRain()
+{
+	if (RainComponent)
+	{
+		RainComponent->bAutoActivate = true;
+	}
+}
+
+void AWeatherController::_setNoRain()
+{
+	if (RainComponent)
+	{
+		RainComponent->bAutoActivate = false;
 	}
 }
 
