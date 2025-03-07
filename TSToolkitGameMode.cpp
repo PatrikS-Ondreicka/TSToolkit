@@ -145,8 +145,11 @@ void ATSToolkitGameMode::_setUpWeatherController(USimConfig* config)
 		controller = GetWorld()->SpawnActor<AWeatherController>(WeatherControllerClass);
 	}
 
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("GM - begin play"));
 	EDayTimeTypes dayTime = (config->IsNight) ? EDayTimeTypes::Night : EDayTimeTypes::Day ;
 	EOvercastTypes overcast = (config->IsOvercast) ? EOvercastTypes::Overcast : EOvercastTypes::Clear;
 	ERainTypes rain = (config->IsRain) ? ERainTypes::Rain : ERainTypes::NoRain;
 	controller->SetWeather(dayTime, overcast);
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("GM - setting rain"));
+	controller->SetRain(rain);
 }

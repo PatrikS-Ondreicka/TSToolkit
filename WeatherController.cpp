@@ -24,12 +24,13 @@ AWeatherController::AWeatherController()
 	RootComponent = Sun;
 
 	VolumetricCloud = CreateDefaultSubobject<UVolumetricCloudComponent>(TEXT("VolumetricCloud"));
-	VolumetricCloud->SetupAttachment(Sun);
+	VolumetricCloud->SetupAttachment(RootComponent);
 
 	SkyAtmosphere = CreateDefaultSubobject<USkyAtmosphereComponent>(TEXT("SkyAtmosphere"));
-	SkyAtmosphere->SetupAttachment(Sun); 
+	SkyAtmosphere->SetupAttachment(RootComponent);
 
 	RainComponent = CreateDefaultSubobject<UNiagaraComponent>(TEXT("Rain component"));
+	RainComponent->bAutoActivate = true;
 	_initVolumetricCloud();
 }
 
@@ -39,6 +40,7 @@ void AWeatherController::BeginPlay()
 	Super::BeginPlay();
 	SetWeather(CurrentDayTime, CurrentOvercast);
 	SetRain(CurrentRain);
+	RainComponent->ActivateSystem();
 }
 
 // Called every frame
@@ -184,7 +186,7 @@ void AWeatherController::_setRain()
 {
 	if (RainComponent)
 	{
-		RainComponent->bAutoActivate = true;
+		RainComponent->SetVisibility(true);
 	}
 }
 
@@ -192,7 +194,7 @@ void AWeatherController::_setNoRain()
 {
 	if (RainComponent)
 	{
-		RainComponent->bAutoActivate = false;
+		RainComponent->SetVisibility(false);
 	}
 }
 
