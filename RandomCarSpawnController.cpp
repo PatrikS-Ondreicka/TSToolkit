@@ -9,9 +9,9 @@
 void ARandomCarSpawnController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	if (_spawnCountdown > 0)
+	if (!_timer->CoundownState())
 	{
-		_spawnCountdown -= DeltaTime;
+		_timer->DecrementCountdown(DeltaTime);
 	}
 	else
 	{
@@ -34,9 +34,9 @@ ACarSource* ARandomCarSpawnController::GetRandomSource()
 	{
 		return nullptr;
 	}
-	
+
 	int index = FMath::RandRange(0, Sources.Num() - 1);
-	ACarSource* randomSource =  Sources[index];
+	ACarSource* randomSource = Sources[index];
 	return randomSource;
 }
 

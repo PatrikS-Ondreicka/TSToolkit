@@ -4,13 +4,13 @@
 #include "PeriodicCarSpawnController.h"
 #include "CarSource.h"
 
-APeriodicCarSpawnController::APeriodicCarSpawnController() 
+APeriodicCarSpawnController::APeriodicCarSpawnController()
 	: Super()
 {
 
 }
 
-void APeriodicCarSpawnController::BeginPlay() 
+void APeriodicCarSpawnController::BeginPlay()
 {
 	Super::BeginPlay();
 }
@@ -25,9 +25,9 @@ void APeriodicCarSpawnController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (_spawnCountdown > 0) 
+	if (!_timer->CoundownState())
 	{
-		_spawnCountdown -= DeltaTime;
+		_timer->DecrementCountdown(DeltaTime);
 		return;
 	}
 

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "PeriodicTimer.h"
 #include "WeatherController.generated.h"
 
 UENUM()
@@ -13,6 +14,8 @@ enum class EDayTimeTypes
 	Night
 };
 
+EDayTimeTypes GetNextDaytimeType(EDayTimeTypes type);
+
 UENUM()
 enum class EOvercastTypes
 {
@@ -20,12 +23,16 @@ enum class EOvercastTypes
 	Clear
 };
 
+EOvercastTypes GetNextOvercastType(EOvercastTypes type);
+
 UENUM()
 enum class ERainTypes
 {
 	NoRain,
 	Rain
 };
+
+ERainTypes GetNextRainType(ERainTypes type);
 
 UCLASS()
 class TSTOOLKIT_API AWeatherController : public AActor
@@ -57,7 +64,26 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "Weather settings")
 	ERainTypes CurrentRain = ERainTypes::NoRain;
-	
+
+	// Weather change settings
+	UPROPERTY(EditAnywhere, Category = "Weather change settings")
+	bool ChangeDayTime = false;
+
+	UPROPERTY(EditAnywhere, Category = "Weather change settings")
+	float ChangeDayTimeRate = 60.0f;
+
+	UPROPERTY(EditAnywhere, Category = "Weather change settings")
+	bool ChangeOvercast = false;
+
+	UPROPERTY(EditAnywhere, Category = "Weather change settings")
+	float ChangeOvercastRate = 60.0f;
+
+	UPROPERTY(EditAnywhere, Category = "Weather change settings")
+	bool ChangeRain = false;
+
+	UPROPERTY(EditAnywhere, Category = "Weather change settings")
+	float ChangeRainRate = 60.0f;
+
 	// Read only sun default values
 	UPROPERTY(VisibleAnywhere, Category = "Sun defaul values")
 	float DaySunIntensity = 30000.0f;
@@ -90,6 +116,10 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = "Sky default values")
 	float OvercastRayleighScattering = 0.0f;
 
+protected:
+	UPeriodicTimer* _daytimeChangeTimer;
+	UPeriodicTimer* _overcastChangeTimer;
+	UPeriodicTimer* _rainChangeTimer;
 
 private:
 	void _setDay(EOvercastTypes overcast);
@@ -101,6 +131,7 @@ private:
 	void _initVolumetricCloud();
 	void _setRain();
 	void _setNoRain();
+	bool _handleTimer(UPeriodicTimer* timer, float DeltaTime);
 
 protected:
 	virtual void BeginPlay() override;

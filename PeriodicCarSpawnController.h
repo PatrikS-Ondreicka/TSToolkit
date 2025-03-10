@@ -7,7 +7,7 @@
 #include "PeriodicCarSpawnController.generated.h"
 
 /**
- * 
+ *
  */
 UCLASS()
 class TSTOOLKIT_API APeriodicCarSpawnController : public ACarSpawnController

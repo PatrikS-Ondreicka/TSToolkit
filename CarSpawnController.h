@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "PeriodicTimer.h"
 #include "CarSpawnController.generated.h"
 
 class ACarSource;
@@ -12,8 +13,8 @@ UCLASS()
 class TSTOOLKIT_API ACarSpawnController : public AActor
 {
 	GENERATED_BODY()
-	
-public:	
+
+public:
 	// Sets default values for this actor's properties
 	ACarSpawnController();
 
@@ -26,10 +27,8 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Controller Details")
 	float SpawnRate = 10.0f;
 
-	
-
 protected:
-	float _spawnCountdown;
+	UPeriodicTimer* _timer;
 	bool _isNight = false;
 
 protected:
@@ -38,7 +37,7 @@ protected:
 	virtual void _roundSetUp();
 	bool _canSourcesSpawn();
 
-public:	
+public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 

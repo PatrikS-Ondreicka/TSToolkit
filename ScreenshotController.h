@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "PeriodicTimer.h"
 #include "GameFramework/Actor.h"
 #include "ScreenshotController.generated.h"
 
@@ -12,8 +13,8 @@ UCLASS()
 class TSTOOLKIT_API AScreenshotController : public AActor
 {
 	GENERATED_BODY()
-	
-public:	
+
+public:
 	// Sets default values for this actor's properties
 	AScreenshotController();
 
@@ -29,8 +30,10 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Controller Details")
 	float DelayBetweenScreenshots = 0.1f;
 
+protected:
+	UPeriodicTimer* _timer;
+
 private:
-	float _screenshotCountdown;
 	float _currentCameraCountdown;
 	int _screenshotsTakenCount;
 	int _currentCameraIndex;
@@ -40,7 +43,7 @@ private:
 protected:
 	virtual void BeginPlay() override;
 
-public:	
+public:
 	virtual void Tick(float DeltaTime) override;
 
 private:

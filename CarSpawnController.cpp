@@ -3,14 +3,16 @@
 
 #include "CarSpawnController.h"
 #include "CarSource.h"
+#include "PeriodicTimer.h"
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values
 ACarSpawnController::ACarSpawnController()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
+	_timer = NewObject<UPeriodicTimer>();
+	_timer->SetInitValue(SpawnRate);
 }
 
 // Called when the game starts or when spawned
@@ -67,7 +69,7 @@ void ACarSpawnController::_registerAllSources()
 
 void ACarSpawnController::_roundSetUp()
 {
-	_spawnCountdown = SpawnRate;
+	_timer->ResetCountdown();
 }
 
 bool ACarSpawnController::_canSourcesSpawn()
