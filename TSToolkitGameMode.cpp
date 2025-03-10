@@ -12,7 +12,7 @@
 #include "ScreenshotController.h"
 
 // Delete macro if testing of level isn't needed
-#define TESTING
+// #define TESTING
 
 typedef UGameplayStatics GS;
 
@@ -145,11 +145,16 @@ void ATSToolkitGameMode::_setUpWeatherController(USimConfig* config)
 		controller = GetWorld()->SpawnActor<AWeatherController>(WeatherControllerClass);
 	}
 
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("GM - begin play"));
 	EDayTimeTypes dayTime = (config->IsNight) ? EDayTimeTypes::Night : EDayTimeTypes::Day ;
 	EOvercastTypes overcast = (config->IsOvercast) ? EOvercastTypes::Overcast : EOvercastTypes::Clear;
 	ERainTypes rain = (config->IsRain) ? ERainTypes::Rain : ERainTypes::NoRain;
 	controller->SetWeather(dayTime, overcast);
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("GM - setting rain"));
 	controller->SetRain(rain);
+	controller->ChangeDayTime = config->IsChangeDayTime;
+	controller->ChangeDayTimeRate = config->ChangeDayTimeRate;
+	controller->ChangeOvercast = config->IsChangeOvercast;
+	controller->ChangeOvercastRate = config->ChangeOvercastRate;
+	controller->ChangeRain = config->IsChangeRain;
+	controller->ChangeRainRate = config->ChangeRainRate;
 }
+

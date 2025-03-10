@@ -67,6 +67,25 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Weather details")
 	bool IsRain;
 
+	// Weather change details
+	UPROPERTY(EditAnywhere, Category = "Weather change details")
+	bool IsChangeDayTime;
+
+	UPROPERTY(EditAnywhere, Category = "Weather change details")
+	float ChangeDayTimeRate;
+
+	UPROPERTY(EditAnywhere, Category = "Weather change details")
+	bool IsChangeOvercast;
+
+	UPROPERTY(EditAnywhere, Category = "Weather change settings")
+	float ChangeOvercastRate;
+
+	UPROPERTY(EditAnywhere, Category = "Weather change details")
+	bool IsChangeRain;
+
+	UPROPERTY(EditAnywhere, Category = "Weather change settings")
+	float ChangeRainRate;
+
 	// Static methods
 public:
 	static TArray<FString> GetLevelNames();

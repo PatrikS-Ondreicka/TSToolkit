@@ -23,7 +23,6 @@ private:
 	
 public:
 
-
 	// Event handlers
 	UFUNCTION(BlueprintCallable)
 	void StartButtonClick();
@@ -90,6 +89,42 @@ public:
 		return _simConfig->IsRain;
 	}
 
+	UFUNCTION(BlueprintPure)
+	FORCEINLINE bool GetIsChangeDayTime()
+	{
+		return _simConfig->IsChangeDayTime;
+	}
+
+	UFUNCTION(BlueprintPure)
+	FORCEINLINE float GetChangeDayTimeRate()
+	{
+		return _simConfig->ChangeDayTimeRate;
+	}
+
+	UFUNCTION(BlueprintPure)
+	FORCEINLINE bool GetIsChangeOvercast()
+	{
+		return _simConfig->IsChangeOvercast;
+	}
+
+	UFUNCTION(BlueprintPure)
+	FORCEINLINE float GetChangeOvercastRate()
+	{
+		return _simConfig->ChangeOvercastRate;
+	}
+
+	UFUNCTION(BlueprintPure)
+	FORCEINLINE bool GetIsChangeRain()
+	{
+		return _simConfig->IsChangeRain;
+	}
+
+	UFUNCTION(BlueprintPure)
+	FORCEINLINE float GetChangeRainRate()
+	{
+		return _simConfig->ChangeRainRate;
+	}
+
 	// Setters
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE void SetRelativeLevelPath(FString value)
@@ -149,6 +184,42 @@ public:
 	FORCEINLINE void SetIsRain(bool value)
 	{
 		_simConfig->IsRain = value;
+	}
+
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE void SetIsChangeDayTime(bool value)
+	{
+		_simConfig->IsChangeDayTime = value;
+	}
+
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE void SetChangeDayTimeRate(float value)
+	{
+		_simConfig->ChangeDayTimeRate = value;
+	}
+
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE void SetIsChangeOvercast(bool value)
+	{
+		_simConfig->IsChangeOvercast = value;
+	}
+
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE void SetChangeOvercastRate(float value)
+	{
+		_simConfig->ChangeOvercastRate = value;
+	}
+
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE void SetIsChangeRain(bool value)
+	{
+		_simConfig->IsChangeRain = value;
+	}
+
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE void SetChangeRainRate(float value)
+	{
+		_simConfig->ChangeRainRate = value;
 	}
 
 	// Aditional functions

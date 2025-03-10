@@ -17,11 +17,21 @@ const FString USimConfig::ConfigDirPath = FPaths::ProjectDir() + "Configs/";
 USimConfig::USimConfig()
 {
 	RelativeLevelPath = "TCross_1.TCross_1";
-	SimulationDuration = 10.0f;
 	ControllerClassName = ECarSpawnControllerClasses::Random;
-	CarsSpawnRate = 10.0f;
-	ScreenshotInterval = 5.0f;
+	SimulationDuration = 60.0f;
+	CarsSpawnRate = 5.0f;
+	ScreenshotInterval = 10.0f;
 	DelayBetweenScreenshots = 0.2f;
+	IsNight = false;
+	IsOvercast = false;
+	IsRain = false;
+	IsChangeDayTime = false;
+	ChangeDayTimeRate = 60.0f;
+	IsChangeOvercast = false;
+	ChangeOvercastRate = 60.0f;
+	IsChangeRain = false;
+	ChangeRainRate = 60.0f;
+	
 }
 
 TArray<FString> USimConfig::GetLevelNames()
@@ -92,6 +102,12 @@ void USimConfig::SaveConfig()
 	jsonObject->SetBoolField(TEXT("IsNight"), IsNight);
 	jsonObject->SetBoolField(TEXT("IsOvercast"), IsOvercast);
 	jsonObject->SetBoolField(TEXT("IsRain"), IsRain);
+	jsonObject->SetBoolField(TEXT("IsChangeDayTime"), IsChangeDayTime);
+	jsonObject->SetNumberField(TEXT("ChangeDayTimeRate"), ChangeDayTimeRate);
+	jsonObject->SetBoolField(TEXT("IsChangeOvercast"), IsChangeOvercast);
+	jsonObject->SetNumberField(TEXT("ChangeOvercastRate"), ChangeOvercastRate);
+	jsonObject->SetBoolField(TEXT("IsChangeRain"), IsChangeRain);
+	jsonObject->SetNumberField(TEXT("ChangeRainRate"), ChangeRainRate);
 
 	FString jsonString;
 	TSharedRef<TJsonWriter<TCHAR>> jsonWriter = TJsonWriterFactory<>::Create(&jsonString);
@@ -119,5 +135,11 @@ void USimConfig::LoadConfig(FString filename)
 		IsNight = jsonObject->GetBoolField(TEXT("IsNight"));
 		IsOvercast = jsonObject->GetBoolField(TEXT("IsOvercast"));
 		IsRain = jsonObject->GetBoolField(TEXT("IsRain"));
+		IsChangeDayTime = jsonObject->GetBoolField(TEXT("IsChangeDayTime"));
+		ChangeDayTimeRate = jsonObject->GetNumberField(TEXT("ChangeDayTimeRate"));
+		IsChangeOvercast = jsonObject->GetBoolField(TEXT("IsChangeOvercast"));
+		ChangeOvercastRate = jsonObject->GetNumberField(TEXT("ChangeOvercastRate"));
+		IsChangeRain = jsonObject->GetBoolField(TEXT("IsChangeRain"));
+		ChangeRainRate = jsonObject->GetNumberField(TEXT("ChangeRainRate"));
 	}
 }

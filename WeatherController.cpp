@@ -64,9 +64,6 @@ void AWeatherController::Tick(float DeltaTime)
 	ERainTypes rain = CurrentRain;
 
 	bool weatherChange = false;
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("daytime - %f"), _daytimeChangeTimer->GetCurrentCountdown()));
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("overcast - %f"), _overcastChangeTimer->GetCurrentCountdown()));
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("rain - %f"), _rainChangeTimer->GetCurrentCountdown()));
 
 	if (ChangeDayTime)
 	{
