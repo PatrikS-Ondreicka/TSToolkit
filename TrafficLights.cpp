@@ -1,6 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "TrafficLights.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/BoxComponent.h"
@@ -10,25 +9,24 @@
 // Sets default values
 ATrafficLights::ATrafficLights()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	TrafficLightsEffectBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Traffic Ligths Effect Box Component"));
-	SetRootComponent(TrafficLightsEffectBox);
-
-	TrafficLightsMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Traffic Lights Static Mesh"));
-	TrafficLightsMeshComponent->SetupAttachment(RootComponent);
+	TrafficLightsMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("TrafficLightsMeshComponent"));
+	SetRootComponent(TrafficLightsMeshComponent);
+	
+	TrafficLightsEffectBox = CreateDefaultSubobject<UBoxComponent>(TEXT("TrafficLightsEffectBox"));
+	TrafficLightsEffectBox->SetupAttachment(RootComponent);
 
 	// Lights Set Up
-	GreenLightComponent = CreateDefaultSubobject<USpotLightComponent>(TEXT("Green Light Spot Light"));
-	GreenLightComponent->SetupAttachment(TrafficLightsMeshComponent);
+	GreenLightComponent = CreateDefaultSubobject<USpotLightComponent>(TEXT("GreenLightComponent"));
+	GreenLightComponent->SetupAttachment(RootComponent);
 
-	OrangeLightComponent = CreateDefaultSubobject<USpotLightComponent>(TEXT("Orange Light Spot Light"));
-	OrangeLightComponent->SetupAttachment(TrafficLightsMeshComponent);
+	OrangeLightComponent = CreateDefaultSubobject<USpotLightComponent>(TEXT("OrangeLightComponent"));
+	OrangeLightComponent->SetupAttachment(RootComponent);
 
-	RedLightComponent = CreateDefaultSubobject<USpotLightComponent>(TEXT("Red Light Spot Light"));
-	RedLightComponent->SetupAttachment(TrafficLightsMeshComponent);
-
+	RedLightComponent = CreateDefaultSubobject<USpotLightComponent>(TEXT("RedLightComponent"));
+	RedLightComponent->SetupAttachment(RootComponent);
 }
 
 // Called when the game starts or when spawned
@@ -38,8 +36,8 @@ void ATrafficLights::BeginPlay()
 	SetTrafficLightsState(CurrentState);
 
 	// Set up of spawn check delegates
-	TrafficLightsEffectBox->OnComponentBeginOverlap.AddDynamic(this, &ATrafficLights::_onBeginOverlap);
-	TrafficLightsEffectBox->OnComponentEndOverlap.AddDynamic(this, &ATrafficLights::_onEndOverlap);
+	/*TrafficLightsEffectBox->OnComponentBeginOverlap.AddDynamic(this, &ATrafficLights::_OnBeginOverlap);
+	TrafficLightsEffectBox->OnComponentEndOverlap.AddDynamic(this, &ATrafficLights::_OnEndOverlap);*/
 }
 
 // Called every frame
@@ -54,47 +52,45 @@ void ATrafficLights::SetTrafficLightsState(ETrafficLightsStates NewState)
 	GreenLightComponent->SetVisibility(ETrafficLightsStates::Green == NewState);
 	OrangeLightComponent->SetVisibility(ETrafficLightsStates::Orange == NewState);
 	RedLightComponent->SetVisibility(ETrafficLightsStates::Red == NewState);
-	_stateChange(NewState);
-}
-
-void ATrafficLights::_onBeginOverlap(
-	UPrimitiveComponent* OverlappedComponent, 
-	AActor* OtherActor, 
-	UPrimitiveComponent* OtherComp,
-	int32 OtherBodyIndex,
-	bool bFromSweep,
-	const FHitResult& SweepResult)
-{
-	ACar* other = Cast<ACar>(OtherActor);
-	if (!other)
+	if (NewState == ETrafficLightsStates::Green)
 	{
-		return;
-	}
-
-	if (CurrentState == ETrafficLightsStates::Red)
-	{
-		other->SetCanMove(false);
-	}
-
-	if (OnLeavePriorityChange == EOnLeavePriorityChange::Largest)
-	{
-		other->SetMovementPriority(1);
+		_SetCarsMove(true);
 	}
 }
 
-void ATrafficLights::_onEndOverlap(
-	UPrimitiveComponent* OverlappedComponent,
-	AActor* OtherActor,
-	UPrimitiveComponent* OtherComp,
-	int32 OtherBodyIndex)
-{
-}
+//void ATrafficLights::_OnBeginOverlap(
+//	UPrimitiveComponent* OverlappedComponent,
+//	AActor* OtherActor,
+//	UPrimitiveComponent* OtherComp,
+//	int32 OtherBodyIndex,
+//	bool bFromSweep,
+//	const FHitResult& SweepResult)
+//{
+//	ACar* other = Cast<ACar>(OtherActor);
+//	if (!other)
+//	{
+//		return;
+//	}
+//
+//	if (CurrentState == ETrafficLightsStates::Red)
+//	{
+//		other->SetCanMove(false);
+//	}
+//}
+//
+//void ATrafficLights::_OnEndOverlap(
+//	UPrimitiveComponent* OverlappedComponent,
+//	AActor* OtherActor,
+//	UPrimitiveComponent* OtherComp,
+//	int32 OtherBodyIndex)
+//{
+//}
 
-void ATrafficLights::_stateChange(ETrafficLightsStates NewState)
+void ATrafficLights::_SetCarsMove(bool CarsMoveValue)
 {
-	TArray<AActor*> overlapingActor;
-	TrafficLightsEffectBox->GetOverlappingActors(overlapingActor);
-	for (AActor* actor : overlapingActor)
+	TArray<AActor*> overlappingActors;
+	TrafficLightsEffectBox->GetOverlappingActors(overlappingActors);
+	for (AActor* actor : overlappingActors)
 	{
 		ACar* car = Cast<ACar>(actor);
 		if (!car)
@@ -102,7 +98,6 @@ void ATrafficLights::_stateChange(ETrafficLightsStates NewState)
 			continue;
 		}
 
-		car->SetCanMove(NewState == ETrafficLightsStates::Green);
+		car->SetCanMove(CarsMoveValue);
 	}
 }
-

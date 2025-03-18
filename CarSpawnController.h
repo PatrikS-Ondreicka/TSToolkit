@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "PeriodicTimer.h"
+#include "Car.h"
 #include "CarSpawnController.generated.h"
 
 class ACarSource;
@@ -22,31 +23,38 @@ public:
 	TArray<ACarSource*> Sources;
 
 	UPROPERTY(EditAnywhere, Category = "Controller Details")
-	bool RegisterAllAtBeginPlay = true;
+	bool bRegisterAllAtBeginPlay = true;
 
 	UPROPERTY(EditAnywhere, Category = "Controller Details")
 	float SpawnRate = 10.0f;
 
+	UPROPERTY(VisibleAnywhere, Category = "Controller Details")
+	TArray<TSubclassOf<ACar>> CarBpPool;
+
+	// Static attributes
+	static TArray<FString> CarBpPaths;
+
 protected:
-	UPeriodicTimer* _timer;
-	bool _isNight = false;
+	UPeriodicTimer* _Timer;
+	bool _IsNight = false;
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-	virtual void _roundSetUp();
-	bool _canSourcesSpawn();
+	virtual void _RoundSetUp();
+	bool _CanSourcesSpawn();
+	TSubclassOf<ACar> _GetRandomCarClass();
 
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 	UFUNCTION(BlueprintPure)
-	FORCEINLINE bool IsNight() const { return _isNight; }
+	FORCEINLINE bool IsNight() const { return _IsNight; }
 
 	UFUNCTION(BlueprintCallable)
-	void SetNight(bool state);
+	void SetNight(bool State);
 
 private:
-	void _registerAllSources();
+	void _RegisterAllSources();
 };

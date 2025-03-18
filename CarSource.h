@@ -32,7 +32,7 @@ public:
 
 	// Details
 	UPROPERTY(EditAnywhere, Category = "Source Details")
-	TSubclassOf<ACar> CarClass;
+	TSubclassOf<ACar> DefaultCarClass;
 
 	UPROPERTY(EditAnywhere, Category = "Source Details")
 	int MaxCarsCount = 5;
@@ -43,7 +43,7 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Source Details")
 	bool IsNight = false;
 
-	// Car behaviour details
+	// Car behavior details
 	UPROPERTY(EditAnywhere, Category = "Spawned Car Details")
 	float CarStaticSpeed = 10;
 
@@ -52,7 +52,7 @@ public:
 
 private:
 	// Spawning attributes
-	bool _canSpawn = true;
+	bool _CanSpawn = true;
 
 protected:
 	// Called when the game starts or when spawned
@@ -65,39 +65,42 @@ public:
 	void OnConstruction(const FTransform& Transform) override;
 
 	UFUNCTION(BlueprintCallable)
-	void SpawnCar();
+	void SpawnDefaultCar();
 
-	// Getter and Setter for _canSpawn
+	UFUNCTION(BlueprintCallable)
+	void SpawnCar(TSubclassOf<ACar> CarClass);
+
+	// Getter and Setter for _CanSpawn
 	FORCEINLINE void SetCanSpawn(bool CanSpawnValue)
 	{
-		_canSpawn = CanSpawnValue;
+		_CanSpawn = CanSpawnValue;
 	}
 
-	FORCEINLINE bool GetCanSpawn()
+	FORCEINLINE bool GetCanSpawn() const
 	{
-		return _canSpawn;
+		return _CanSpawn;
 	}
 
 private:
 
 	UFUNCTION()
-	virtual void _onSpawnCheckBeginOverlap(
-		UPrimitiveComponent* OverlappedComponent, 
-		AActor* OtherActor, 
-		UPrimitiveComponent* OtherComp, 
-		int32 OtherBodyIndex, 
-		bool bFromSweep, 
+	virtual void _OnSpawnCheckBeginOverlap(
+		UPrimitiveComponent* OverlappedComponent,
+		AActor* OtherActor,
+		UPrimitiveComponent* OtherComp,
+		int32 OtherBodyIndex,
+		bool bFromSweep,
 		const FHitResult& SweepResult
 	);
 
 	UFUNCTION()
-	virtual void _onSpawnCheckEndOverlap(
+	virtual void _OnSpawnCheckEndOverlap(
 		UPrimitiveComponent* OverlappedComponent,
 		AActor* OtherActor,
 		UPrimitiveComponent* OtherComp,
 		int32 OtherBodyIndex
 	);
 
-	ACarPath* _selectPath();
-	void _initPath();
+	ACarPath* _SelectPath();
+	void _InitPath();
 };

@@ -20,12 +20,12 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-	virtual void _roundSetUp();
+	virtual void _RoundSetUp() override;
 
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 private:
-	void _spawnAtAllSources();
+	void _SpawnAtAllSources();
 };

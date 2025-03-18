@@ -7,13 +7,13 @@
 #include "Lamp.generated.h"
 
 /**
- * 
+ *
  */
 UCLASS()
 class TSTOOLKIT_API ALamp : public ADecorativeActor
 {
 	GENERATED_BODY()
-	
+
 public:
 	ALamp();
 
@@ -21,13 +21,13 @@ public:
 	class USpotLightComponent* SpotLight;
 
 	UPROPERTY(EditAnywhere, Category = "Lamp Details")
-	bool IsOn = false;
+	bool bIsOn = false;
 
 	UPROPERTY(EditAnywhere, Category = "Lamp Details")
-	bool SetOnBeginPlay = false;
+	bool bSetOnBeginPlay = false;
 
 	UPROPERTY(EditAnywhere, Category = "Lamp Details")
-	bool TurnOnWhenNight = true;
+	bool bTurnOnWhenNight = true;
 
 public:
 	virtual void BeginPlay() override;

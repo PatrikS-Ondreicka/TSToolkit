@@ -8,7 +8,7 @@
 #include "MainMenu.generated.h"
 
 /**
- * 
+ *
  */
 UCLASS()
 class TSTOOLKIT_API UMainMenu : public UUserWidget
@@ -19,215 +19,214 @@ public:
 	UMainMenu(const FObjectInitializer& ObjectInitializer);
 
 private:
-	USimConfig* _simConfig;
-	
+	USimConfig* _SimConfig;
+
 public:
 
 	// Event handlers
 	UFUNCTION(BlueprintCallable)
 	void StartButtonClick();
 
-
 	// Getters
 	UFUNCTION(BlueprintPure)
-	FORCEINLINE FString GetRelativeLevelPath()
+	FORCEINLINE FString GetRelativeLevelPath() const
 	{
-		return _simConfig->RelativeLevelPath;
+		return _SimConfig->RelativeLevelPath;
 	}
 
 	UFUNCTION(BlueprintPure)
-	FORCEINLINE float GetSimulationDuration()
+	FORCEINLINE float GetSimulationDuration() const
 	{
-		return _simConfig->SimulationDuration;
+		return _SimConfig->SimulationDuration;
 	}
 
 	UFUNCTION(BlueprintPure)
-	FORCEINLINE ECarSpawnControllerClasses GetCarSpawnControllerClassName()
+	FORCEINLINE ECarSpawnControllerClasses GetCarSpawnControllerClassName() const
 	{
-		return _simConfig->ControllerClassName;
+		return _SimConfig->ControllerClassName;
 	}
 
 	UFUNCTION(BlueprintPure)
-	FORCEINLINE FString GetCarSpawnControllerClassNameAsString()
+	FORCEINLINE FString GetCarSpawnControllerClassNameAsString() const
 	{
-		return USimConfig::GetCarSpawnControllerClassString(_simConfig->ControllerClassName);
+		return USimConfig::GetCarSpawnControllerClassString(_SimConfig->ControllerClassName);
 	}
 
 	UFUNCTION(BlueprintPure)
-	FORCEINLINE float GetCarsSpawnRate()
+	FORCEINLINE float GetCarsSpawnRate() const
 	{
-		return _simConfig->CarsSpawnRate;
+		return _SimConfig->CarsSpawnRate;
 	}
 
 	UFUNCTION(BlueprintPure)
-	FORCEINLINE float GetScreenshotInterval()
+	FORCEINLINE float GetScreenshotInterval() const
 	{
-		return _simConfig->ScreenshotInterval;
+		return _SimConfig->ScreenshotInterval;
 	}
 
 	UFUNCTION(BlueprintPure)
-	FORCEINLINE float GetDelayBetweenScreenshots()
+	FORCEINLINE float GetDelayBetweenScreenshots() const
 	{
-		return _simConfig->DelayBetweenScreenshots;
+		return _SimConfig->DelayBetweenScreenshots;
 	}
 
 	UFUNCTION(BlueprintPure)
-	FORCEINLINE bool GetIsNight()
+	FORCEINLINE bool GetIsNight() const
 	{
-		return _simConfig->IsNight;
+		return _SimConfig->bIsNight;
 	}
 
 	UFUNCTION(BlueprintPure)
-	FORCEINLINE bool GetIsOvercast()
+	FORCEINLINE bool GetIsOvercast() const
 	{
-		return _simConfig->IsOvercast;
+		return _SimConfig->bIsOvercast;
 	}
 
 	UFUNCTION(BlueprintPure)
-	FORCEINLINE bool GetIsRain()
+	FORCEINLINE bool GetIsRain() const
 	{
-		return _simConfig->IsRain;
+		return _SimConfig->bIsRain;
 	}
 
 	UFUNCTION(BlueprintPure)
-	FORCEINLINE bool GetIsChangeDayTime()
+	FORCEINLINE bool GetIsChangeDayTime() const
 	{
-		return _simConfig->IsChangeDayTime;
+		return _SimConfig->bIsChangeDayTime;
 	}
 
 	UFUNCTION(BlueprintPure)
-	FORCEINLINE float GetChangeDayTimeRate()
+	FORCEINLINE float GetChangeDayTimeRate() const
 	{
-		return _simConfig->ChangeDayTimeRate;
+		return _SimConfig->ChangeDayTimeRate;
 	}
 
 	UFUNCTION(BlueprintPure)
-	FORCEINLINE bool GetIsChangeOvercast()
+	FORCEINLINE bool GetIsChangeOvercast() const
 	{
-		return _simConfig->IsChangeOvercast;
+		return _SimConfig->bIsChangeOvercast;
 	}
 
 	UFUNCTION(BlueprintPure)
-	FORCEINLINE float GetChangeOvercastRate()
+	FORCEINLINE float GetChangeOvercastRate() const
 	{
-		return _simConfig->ChangeOvercastRate;
+		return _SimConfig->ChangeOvercastRate;
 	}
 
 	UFUNCTION(BlueprintPure)
-	FORCEINLINE bool GetIsChangeRain()
+	FORCEINLINE bool GetIsChangeRain() const
 	{
-		return _simConfig->IsChangeRain;
+		return _SimConfig->bIsChangeRain;
 	}
 
 	UFUNCTION(BlueprintPure)
-	FORCEINLINE float GetChangeRainRate()
+	FORCEINLINE float GetChangeRainRate() const
 	{
-		return _simConfig->ChangeRainRate;
+		return _SimConfig->ChangeRainRate;
 	}
 
 	// Setters
 	UFUNCTION(BlueprintCallable)
-	FORCEINLINE void SetRelativeLevelPath(FString value)
+	FORCEINLINE void SetRelativeLevelPath(const FString& Value)
 	{
-		_simConfig->RelativeLevelPath = value;
+		_SimConfig->RelativeLevelPath = Value;
 	}
 
 	UFUNCTION(BlueprintCallable)
-	FORCEINLINE void SetSimulationDuration(float value)
+	FORCEINLINE void SetSimulationDuration(float Value)
 	{
-		_simConfig->SimulationDuration = value;
+		_SimConfig->SimulationDuration = Value;
 	}
 
 	UFUNCTION(BlueprintCallable)
-	FORCEINLINE void SetCarSpawnControllerClassName(ECarSpawnControllerClasses value)
+	FORCEINLINE void SetCarSpawnControllerClassName(ECarSpawnControllerClasses Value)
 	{
-		_simConfig->ControllerClassName = value;
+		_SimConfig->ControllerClassName = Value;
 	}
 
 	UFUNCTION(BlueprintCallable)
-	FORCEINLINE void SetCarSpawnControllerClassNameByString(FString value)
+	FORCEINLINE void SetCarSpawnControllerClassNameByString(const FString& Value)
 	{
-		_simConfig->ControllerClassName = USimConfig::GetCarSpawnControllerClassByName(value);
+		_SimConfig->ControllerClassName = USimConfig::GetCarSpawnControllerClassByName(Value);
 	}
 
 	UFUNCTION(BlueprintCallable)
-	FORCEINLINE void SetCarsSpawnRate(float value)
+	FORCEINLINE void SetCarsSpawnRate(float Value)
 	{
-		_simConfig->CarsSpawnRate = value;
+		_SimConfig->CarsSpawnRate = Value;
 	}
 
 	UFUNCTION(BlueprintCallable)
-	FORCEINLINE void SetScreenshotInterval(float value)
+	FORCEINLINE void SetScreenshotInterval(float Value)
 	{
-		_simConfig->ScreenshotInterval = value;
+		_SimConfig->ScreenshotInterval = Value;
 	}
 
 	UFUNCTION(BlueprintCallable)
-	FORCEINLINE void SetDelayBetweenScreenshots(float value)
+	FORCEINLINE void SetDelayBetweenScreenshots(float Value)
 	{
-		_simConfig->DelayBetweenScreenshots = value;
+		_SimConfig->DelayBetweenScreenshots = Value;
 	}
 
 	UFUNCTION(BlueprintCallable)
-	FORCEINLINE void SetIsNight(bool value)
+	FORCEINLINE void SetIsNight(bool Value)
 	{
-		_simConfig->IsNight = value;
+		_SimConfig->bIsNight = Value;
 	}
 
 	UFUNCTION(BlueprintCallable)
-	FORCEINLINE void SetIsOvercast(bool value)
+	FORCEINLINE void SetIsOvercast(bool Value)
 	{
-		_simConfig->IsOvercast = value;
+		_SimConfig->bIsOvercast = Value;
 	}
 
 	UFUNCTION(BlueprintCallable)
-	FORCEINLINE void SetIsRain(bool value)
+	FORCEINLINE void SetIsRain(bool Value)
 	{
-		_simConfig->IsRain = value;
+		_SimConfig->bIsRain = Value;
 	}
 
 	UFUNCTION(BlueprintCallable)
-	FORCEINLINE void SetIsChangeDayTime(bool value)
+	FORCEINLINE void SetIsChangeDayTime(bool Value)
 	{
-		_simConfig->IsChangeDayTime = value;
+		_SimConfig->bIsChangeDayTime = Value;
 	}
 
 	UFUNCTION(BlueprintCallable)
-	FORCEINLINE void SetChangeDayTimeRate(float value)
+	FORCEINLINE void SetChangeDayTimeRate(float Value)
 	{
-		_simConfig->ChangeDayTimeRate = value;
+		_SimConfig->ChangeDayTimeRate = Value;
 	}
 
 	UFUNCTION(BlueprintCallable)
-	FORCEINLINE void SetIsChangeOvercast(bool value)
+	FORCEINLINE void SetIsChangeOvercast(bool Value)
 	{
-		_simConfig->IsChangeOvercast = value;
+		_SimConfig->bIsChangeOvercast = Value;
 	}
 
 	UFUNCTION(BlueprintCallable)
-	FORCEINLINE void SetChangeOvercastRate(float value)
+	FORCEINLINE void SetChangeOvercastRate(float Value)
 	{
-		_simConfig->ChangeOvercastRate = value;
+		_SimConfig->ChangeOvercastRate = Value;
 	}
 
 	UFUNCTION(BlueprintCallable)
-	FORCEINLINE void SetIsChangeRain(bool value)
+	FORCEINLINE void SetIsChangeRain(bool Value)
 	{
-		_simConfig->IsChangeRain = value;
+		_SimConfig->bIsChangeRain = Value;
 	}
 
 	UFUNCTION(BlueprintCallable)
-	FORCEINLINE void SetChangeRainRate(float value)
+	FORCEINLINE void SetChangeRainRate(float Value)
 	{
-		_simConfig->ChangeRainRate = value;
+		_SimConfig->ChangeRainRate = Value;
 	}
 
-	// Aditional functions
+	// Additional functions
 	UFUNCTION(BlueprintPure)
-	TArray<FString> GetLevels();
+	TArray<FString> GetLevels() const;
 
 	UFUNCTION(BlueprintPure)
-	TArray<FString> GetCarSpawnControllerClasses();
+	TArray<FString> GetCarSpawnControllerClasses() const;
 
 	UFUNCTION(BlueprintCallable)
 	void SaveConfig();

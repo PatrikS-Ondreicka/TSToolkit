@@ -7,7 +7,7 @@
 #include "PeriodicTimer.generated.h"
 
 /**
- * 
+ *
  */
 UCLASS()
 class TSTOOLKIT_API UPeriodicTimer : public UObject
@@ -18,40 +18,39 @@ public:
 	UPeriodicTimer();
 
 protected:
-	float _initValue;
-	float _currentCountdown;
+	float _InitValue;
+	float _CurrentCountdown;
 
 public:
 
 	FORCEINLINE float GetInitValue() const
 	{
-		return _initValue;
+		return _InitValue;
 	}
 
-	FORCEINLINE void SetInitValue(float value)
+	FORCEINLINE void SetInitValue(float Value)
 	{
-		_initValue = value;
+		_InitValue = Value;
 		ResetCountdown();
 	}
 
 	FORCEINLINE float GetCurrentCountdown() const
 	{
-		return _currentCountdown;
+		return _CurrentCountdown;
 	}
 
-	FORCEINLINE bool CoundownState() const
+	FORCEINLINE bool CountdownState() const
 	{
-		return _currentCountdown <= 0.0f;
+		return _CurrentCountdown <= 0.0f;
 	}
 
-	FORCEINLINE void DecrementCountdown(float value)
+	FORCEINLINE void DecrementCountdown(float Value)
 	{
-		_currentCountdown -= value;
+		_CurrentCountdown -= Value;
 	}
 
 	FORCEINLINE void ResetCountdown()
 	{
-		_currentCountdown = _initValue;
+		_CurrentCountdown = _InitValue;
 	}
 };
-

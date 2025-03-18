@@ -1,6 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "TrafficLightsGroupController.h"
 #include "TrafficLightsGroup.h"
 #include "Kismet/GameplayStatics.h"
@@ -8,7 +7,7 @@
 // Sets default values
 ATrafficLightsGroupController::ATrafficLightsGroupController()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 }
 
@@ -17,16 +16,16 @@ void ATrafficLightsGroupController::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (RegisterAllAtBeginPlay)
+	if (bRegisterAllAtBeginPlay)
 	{
-		_registerAllGroups();
+		_RegisterAllGroups();
 	}
 
 	if (TrafficLightsGroups.Num() > 0)
 	{
-		_currentGroupIndex = 0;
-		_currentGroupCountDown = GetCurrentGroup()->StateChangeTime;
-		_setStateForGroup(_currentGroupIndex, ETrafficLightsStates::Green);
+		_CurrentGroupIndex = 0;
+		_CurrentGroupCountDown = GetCurrentGroup()->StateChangeTime;
+		_SetStateForGroup(_CurrentGroupIndex, ETrafficLightsStates::Green);
 	}
 }
 
@@ -34,8 +33,8 @@ void ATrafficLightsGroupController::BeginPlay()
 void ATrafficLightsGroupController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	_currentGroupCountDown -= DeltaTime;
-	if (_currentGroupCountDown <= 0)
+	_CurrentGroupCountDown -= DeltaTime;
+	if (_CurrentGroupCountDown <= 0)
 	{
 		NextGroup();
 	}
@@ -43,13 +42,13 @@ void ATrafficLightsGroupController::Tick(float DeltaTime)
 
 void ATrafficLightsGroupController::NextGroup()
 {
-	_setStateForGroup(_currentGroupIndex, ETrafficLightsStates::Red);
-	_currentGroupIndex = (_currentGroupIndex + 1) % TrafficLightsGroups.Num();
-	_currentGroupCountDown = GetCurrentGroup()->StateChangeTime;
-	_setStateForGroup(_currentGroupIndex, ETrafficLightsStates::Green);
+	_SetStateForGroup(_CurrentGroupIndex, ETrafficLightsStates::Red);
+	_CurrentGroupIndex = (_CurrentGroupIndex + 1) % TrafficLightsGroups.Num();
+	_CurrentGroupCountDown = GetCurrentGroup()->StateChangeTime;
+	_SetStateForGroup(_CurrentGroupIndex, ETrafficLightsStates::Green);
 }
 
-void ATrafficLightsGroupController::_registerAllGroups()
+void ATrafficLightsGroupController::_RegisterAllGroups()
 {
 	UWorld* world = GetWorld();
 	TrafficLightsGroups.Empty();
@@ -67,14 +66,13 @@ void ATrafficLightsGroupController::_registerAllGroups()
 	}
 }
 
-void ATrafficLightsGroupController::_setStateForGroup(int Index, ETrafficLightsStates State)
+void ATrafficLightsGroupController::_SetStateForGroup(int Index, ETrafficLightsStates State)
 {
 	if (!TrafficLightsGroups.IsValidIndex(Index))
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Invalid index in _setStateForGroup"));
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Invalid index in _SetStateForGroup"));
 		return;
 	}
 
 	TrafficLightsGroups[Index]->SetGroupState(State);
 }
-

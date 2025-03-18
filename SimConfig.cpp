@@ -1,6 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "SimConfig.h"
 #include "AssetRegistry/AssetRegistryModule.h"
 #include "AssetRegistry/IAssetRegistry.h"
@@ -9,7 +8,7 @@
 #include "Dom/JsonObject.h"
 #include "Misc/Paths.h"
 
-const FString USimConfig::LevelDirrPath = "/Game/SimBlank/Levels/";
+const FString USimConfig::LevelDirPath = "/Game/SimBlank/Levels/";
 const FString USimConfig::_MainMenuLevelName = "MainMenu";
 const FString USimConfig::ConfigFileName = "SimConfig.json";
 const FString USimConfig::ConfigDirPath = FPaths::ProjectDir() + "Configs/";
@@ -18,20 +17,19 @@ USimConfig::USimConfig()
 {
 	RelativeLevelPath = "TCross_1.TCross_1";
 	ControllerClassName = ECarSpawnControllerClasses::Random;
-	SimulationDuration = 60.0f;
+	SimulationDuration = 360.0f;
 	CarsSpawnRate = 5.0f;
 	ScreenshotInterval = 10.0f;
 	DelayBetweenScreenshots = 0.2f;
-	IsNight = false;
-	IsOvercast = false;
-	IsRain = false;
-	IsChangeDayTime = false;
+	bIsNight = false;
+	bIsOvercast = false;
+	bIsRain = false;
+	bIsChangeDayTime = false;
 	ChangeDayTimeRate = 60.0f;
-	IsChangeOvercast = false;
+	bIsChangeOvercast = false;
 	ChangeOvercastRate = 60.0f;
-	IsChangeRain = false;
+	bIsChangeRain = false;
 	ChangeRainRate = 60.0f;
-	
 }
 
 TArray<FString> USimConfig::GetLevelNames()
@@ -41,7 +39,7 @@ TArray<FString> USimConfig::GetLevelNames()
 	IAssetRegistry& assetRegistry = assetRegistryModule.Get();
 
 	TArray<FAssetData> assetData;
-	assetRegistry.GetAssetsByPath(FName(USimConfig::LevelDirrPath), assetData);
+	assetRegistry.GetAssetsByPath(FName(USimConfig::LevelDirPath), assetData);
 
 	for (FAssetData data : assetData)
 	{
@@ -99,14 +97,14 @@ void USimConfig::SaveConfig()
 	jsonObject->SetNumberField(TEXT("CarsSpawnRate"), CarsSpawnRate);
 	jsonObject->SetNumberField(TEXT("ScreenshotInterval"), ScreenshotInterval);
 	jsonObject->SetNumberField(TEXT("DelayBetweenScreenshots"), DelayBetweenScreenshots);
-	jsonObject->SetBoolField(TEXT("IsNight"), IsNight);
-	jsonObject->SetBoolField(TEXT("IsOvercast"), IsOvercast);
-	jsonObject->SetBoolField(TEXT("IsRain"), IsRain);
-	jsonObject->SetBoolField(TEXT("IsChangeDayTime"), IsChangeDayTime);
+	jsonObject->SetBoolField(TEXT("IsNight"), bIsNight);
+	jsonObject->SetBoolField(TEXT("IsOvercast"), bIsOvercast);
+	jsonObject->SetBoolField(TEXT("IsRain"), bIsRain);
+	jsonObject->SetBoolField(TEXT("IsChangeDayTime"), bIsChangeDayTime);
 	jsonObject->SetNumberField(TEXT("ChangeDayTimeRate"), ChangeDayTimeRate);
-	jsonObject->SetBoolField(TEXT("IsChangeOvercast"), IsChangeOvercast);
+	jsonObject->SetBoolField(TEXT("IsChangeOvercast"), bIsChangeOvercast);
 	jsonObject->SetNumberField(TEXT("ChangeOvercastRate"), ChangeOvercastRate);
-	jsonObject->SetBoolField(TEXT("IsChangeRain"), IsChangeRain);
+	jsonObject->SetBoolField(TEXT("IsChangeRain"), bIsChangeRain);
 	jsonObject->SetNumberField(TEXT("ChangeRainRate"), ChangeRainRate);
 
 	FString jsonString;
@@ -132,14 +130,14 @@ void USimConfig::LoadConfig(FString filename)
 		CarsSpawnRate = jsonObject->GetNumberField(TEXT("CarsSpawnRate"));
 		ScreenshotInterval = jsonObject->GetNumberField(TEXT("ScreenshotInterval"));
 		DelayBetweenScreenshots = jsonObject->GetNumberField(TEXT("DelayBetweenScreenshots"));
-		IsNight = jsonObject->GetBoolField(TEXT("IsNight"));
-		IsOvercast = jsonObject->GetBoolField(TEXT("IsOvercast"));
-		IsRain = jsonObject->GetBoolField(TEXT("IsRain"));
-		IsChangeDayTime = jsonObject->GetBoolField(TEXT("IsChangeDayTime"));
+		bIsNight = jsonObject->GetBoolField(TEXT("IsNight"));
+		bIsOvercast = jsonObject->GetBoolField(TEXT("IsOvercast"));
+		bIsRain = jsonObject->GetBoolField(TEXT("IsRain"));
+		bIsChangeDayTime = jsonObject->GetBoolField(TEXT("IsChangeDayTime"));
 		ChangeDayTimeRate = jsonObject->GetNumberField(TEXT("ChangeDayTimeRate"));
-		IsChangeOvercast = jsonObject->GetBoolField(TEXT("IsChangeOvercast"));
+		bIsChangeOvercast = jsonObject->GetBoolField(TEXT("IsChangeOvercast"));
 		ChangeOvercastRate = jsonObject->GetNumberField(TEXT("ChangeOvercastRate"));
-		IsChangeRain = jsonObject->GetBoolField(TEXT("IsChangeRain"));
+		bIsChangeRain = jsonObject->GetBoolField(TEXT("IsChangeRain"));
 		ChangeRainRate = jsonObject->GetNumberField(TEXT("ChangeRainRate"));
 	}
 }

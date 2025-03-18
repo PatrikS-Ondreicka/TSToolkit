@@ -1,6 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "ScreenshotController.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
@@ -13,20 +12,21 @@ AScreenshotController::AScreenshotController()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-	_timer = NewObject<UPeriodicTimer>();
-	_currentCamera = nullptr;
-	_currentCameraIndex = -1;
-	_currentCameraCountdown = 0;
+	_Timer = NewObject<UPeriodicTimer>();
+	_CurrentCamera = nullptr;
+	_CurrentCameraIndex = -1;
+	_CurrentCameraCountdown = 0;
+	_ScreenshotsTakenCount = 0;
 }
 
 // Called when the game starts or when spawned
 void AScreenshotController::BeginPlay()
 {
 	Super::BeginPlay();
-	_timer->SetInitValue(ScreenshotInterval);
-	if (RegisterAllAtBeginPlay)
+	_Timer->SetInitValue(ScreenshotInterval);
+	if (bRegisterAllAtBeginPlay)
 	{
-		_registerAllCameras();
+		_RegisterAllCameras();
 	}
 }
 
@@ -34,46 +34,44 @@ void AScreenshotController::BeginPlay()
 void AScreenshotController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	if (Cameras.Num() < 0)
+	if (Cameras.Num() <= 0)
 	{
 		return;
 	}
 
-	if (_timer->CoundownState())
+	if (_Timer->CountdownState())
 	{
+		_CurrentCameraCountdown -= DeltaTime;
 
-		_currentCameraCountdown -= DeltaTime;
-
-		if (_screenshotsTakenCount == Cameras.Num())
+		if (_ScreenshotsTakenCount == Cameras.Num())
 		{
-			_timer->ResetCountdown();
-			_currentCamera = nullptr;
-			_currentCameraIndex = -1;
-			_currentCameraCountdown = 0;
-			_screenshotsTakenCount = 0;
+			_Timer->ResetCountdown();
+			_CurrentCamera = nullptr;
+			_CurrentCameraIndex = -1;
+			_CurrentCameraCountdown = 0;
+			_ScreenshotsTakenCount = 0;
 			return;
 		}
 
-		if (_currentCameraCountdown <= 0)
+		if (_CurrentCameraCountdown <= 0)
 		{
-			_currentCameraIndex++;
-			if (Cameras.IsValidIndex(_currentCameraIndex))
+			_CurrentCameraIndex++;
+			if (Cameras.IsValidIndex(_CurrentCameraIndex))
 			{
-				_currentCamera = Cameras[_currentCameraIndex];
-				_currentCameraCountdown = DelayBetweenScreenshots;
-				_currentCamera->TakeScreenshot();
-				_screenshotsTakenCount++;
+				_CurrentCamera = Cameras[_CurrentCameraIndex];
+				_CurrentCameraCountdown = DelayBetweenScreenshots;
+				_CurrentCamera->TakeScreenshot();
+				_ScreenshotsTakenCount++;
 			}
-
 		}
 	}
 	else
 	{
-		_timer->DecrementCountdown(DeltaTime);
+		_Timer->DecrementCountdown(DeltaTime);
 	}
 }
 
-void AScreenshotController::_registerAllCameras()
+void AScreenshotController::_RegisterAllCameras()
 {
 	UWorld* world = GetWorld();
 	Cameras.Empty();
@@ -90,4 +88,3 @@ void AScreenshotController::_registerAllCameras()
 		}
 	}
 }
-

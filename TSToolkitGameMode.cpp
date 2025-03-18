@@ -1,6 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "TSToolkitGameMode.h"
 #include "Kismet/GameplayStatics.h"
 #include "Engine/World.h"
@@ -18,10 +17,12 @@ typedef UGameplayStatics GS;
 
 ATSToolkitGameMode::ATSToolkitGameMode()
 {
+	PrimaryActorTick.bCanEverTick = true;
 	ConstructorHelpers::FClassFinder<UUserWidget> mainMenuWidgetClass(TEXT("WidgetBlueprint'/Game/BP/UI/BP_MainMenu.BP_MainMenu_C'"));
-	ConstructorHelpers::FClassFinder<AWeatherController> weatherControllerClass(TEXT("Engine.Blueprint'/Game/BP/BP_WeatherController.BP_WeatherController'"));
+	ConstructorHelpers::FClassFinder<AWeatherController> weatherControllerClass(TEXT("Blueprint'/Game/BP/BP_WeatherController.BP_WeatherController_C'"));
 	MainMenuWidgetClass = mainMenuWidgetClass.Class;
 	WeatherControllerClass = weatherControllerClass.Class;
+	_Timer = NewObject<UPeriodicTimer>();
 }
 
 void ATSToolkitGameMode::BeginPlay()
@@ -35,11 +36,27 @@ void ATSToolkitGameMode::BeginPlay()
 	else
 	{
 #ifndef TESTING
-		USimConfig* config = NewObject<USimConfig>();
-		config->LoadConfig(USimConfig::ConfigFileName);
-		LoadLevel(config);
+		USimConfig* Config = NewObject<USimConfig>();
+		Config->LoadConfig(USimConfig::ConfigFileName);
+		LoadLevel(Config);
 #endif
 	}
+}
+
+void ATSToolkitGameMode::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+	if (!bIsRunning)
+	{
+		return;
+	}
+		
+	_Timer->DecrementCountdown(DeltaTime);	
+	if (_Timer->CountdownState())
+	{
+		FGenericPlatformMisc::RequestExit(false);
+	}
+	
 }
 
 bool ATSToolkitGameMode::IsMainMenu() const
@@ -63,45 +80,47 @@ void ATSToolkitGameMode::LoadMainMenu()
 	}
 }
 
-void ATSToolkitGameMode::LoadLevel(USimConfig* config)
+void ATSToolkitGameMode::LoadLevel(USimConfig* Config)
 {
-	_levelVieportSetup();
+	_LevelViewportSetup();
 	UWorld* world = GetWorld();
-	_setUpLevel(config);
+	_SetUpLevel(Config);
+	bIsRunning = true;
 }
 
-void ATSToolkitGameMode::_UIViewportSetup(UUserWidget* widget)
+void ATSToolkitGameMode::_UIViewportSetup(UUserWidget* Widget)
 {
 	UWorld* world = GetWorld();
 	APlayerController* controller = GS::GetPlayerController(world, 0);
-	widget->AddToViewport(100);
-	FInputModeUIOnly InputMode;
-	InputMode.SetWidgetToFocus(widget->TakeWidget());
-	controller->SetInputMode(InputMode);
+	Widget->AddToViewport(100);
+	FInputModeUIOnly inputMode;
+	inputMode.SetWidgetToFocus(Widget->TakeWidget());
+	controller->SetInputMode(inputMode);
 	controller->SetShowMouseCursor(true);
 }
 
-void ATSToolkitGameMode::_levelVieportSetup()
+void ATSToolkitGameMode::_LevelViewportSetup()
 {
 	UWorld* world = GetWorld();
 	APlayerController* controller = GS::GetPlayerController(world, 0);
-	FInputModeGameOnly InputMode;
-	controller->SetInputMode(InputMode);
+	FInputModeGameOnly inputMode;
+	controller->SetInputMode(inputMode);
 	controller->SetShowMouseCursor(false);
 }
 
-void ATSToolkitGameMode::_setUpLevel(USimConfig* config)
+void ATSToolkitGameMode::_SetUpLevel(USimConfig* Config)
 {
-	_setUpCarSpawnController(config);
-	_setUpScreenshotController(config);
-	_setUpWeatherController(config);
+	_SetUpCarSpawnController(Config);
+	_SetUpScreenshotController(Config);
+	_SetUpWeatherController(Config);
+	_Timer->SetInitValue(Config->SimulationDuration);
 }
 
-void ATSToolkitGameMode::_setUpCarSpawnController(USimConfig* config)
+void ATSToolkitGameMode::_SetUpCarSpawnController(USimConfig* Config)
 {
 	UWorld* world = GetWorld();
 	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, world->GetMapName());
-	ECarSpawnControllerClasses controllerClassName = config->ControllerClassName;
+	ECarSpawnControllerClasses controllerClassName = Config->ControllerClassName;
 	ACarSpawnController* controller = nullptr;
 	if (controllerClassName == ECarSpawnControllerClasses::Random)
 	{
@@ -116,20 +135,20 @@ void ATSToolkitGameMode::_setUpCarSpawnController(USimConfig* config)
 		UE_LOG(LogTemp, Warning, TEXT("Invalid controller class name"));
 		return;
 	}
-	controller->RegisterAllAtBeginPlay = true;
-	controller->SpawnRate = config->CarsSpawnRate;
+	controller->bRegisterAllAtBeginPlay = true;
+	controller->SpawnRate = Config->CarsSpawnRate;
 }
 
-void ATSToolkitGameMode::_setUpScreenshotController(USimConfig* config)
+void ATSToolkitGameMode::_SetUpScreenshotController(USimConfig* Config)
 {
 	UWorld* world = GetWorld();
 	AScreenshotController* controller = world->SpawnActor<AScreenshotController>(AScreenshotController::StaticClass());
-	controller->RegisterAllAtBeginPlay = true;
-	controller->ScreenshotInterval = config->ScreenshotInterval;
-	controller->DelayBetweenScreenshots = config->DelayBetweenScreenshots;
+	controller->bRegisterAllAtBeginPlay = true;
+	controller->ScreenshotInterval = Config->ScreenshotInterval;
+	controller->DelayBetweenScreenshots = Config->DelayBetweenScreenshots;
 }
 
-void ATSToolkitGameMode::_setUpWeatherController(USimConfig* config)
+void ATSToolkitGameMode::_SetUpWeatherController(USimConfig* Config)
 {
 	TArray<AActor*> found;
 	GS::GetAllActorsOfClass(GetWorld(), AWeatherController::StaticClass(), found);
@@ -145,16 +164,15 @@ void ATSToolkitGameMode::_setUpWeatherController(USimConfig* config)
 		controller = GetWorld()->SpawnActor<AWeatherController>(WeatherControllerClass);
 	}
 
-	EDayTimeTypes dayTime = (config->IsNight) ? EDayTimeTypes::Night : EDayTimeTypes::Day ;
-	EOvercastTypes overcast = (config->IsOvercast) ? EOvercastTypes::Overcast : EOvercastTypes::Clear;
-	ERainTypes rain = (config->IsRain) ? ERainTypes::Rain : ERainTypes::NoRain;
+	EDayTimeTypes dayTime = (Config->bIsNight) ? EDayTimeTypes::Night : EDayTimeTypes::Day;
+	EOvercastTypes overcast = (Config->bIsOvercast) ? EOvercastTypes::Overcast : EOvercastTypes::Clear;
+	ERainTypes rain = (Config->bIsRain) ? ERainTypes::Rain : ERainTypes::NoRain;
 	controller->SetWeather(dayTime, overcast);
 	controller->SetRain(rain);
-	controller->ChangeDayTime = config->IsChangeDayTime;
-	controller->ChangeDayTimeRate = config->ChangeDayTimeRate;
-	controller->ChangeOvercast = config->IsChangeOvercast;
-	controller->ChangeOvercastRate = config->ChangeOvercastRate;
-	controller->ChangeRain = config->IsChangeRain;
-	controller->ChangeRainRate = config->ChangeRainRate;
+	controller->ChangeDayTime = Config->bIsChangeDayTime;
+	controller->ChangeDayTimeRate = Config->ChangeDayTimeRate;
+	controller->ChangeOvercast = Config->bIsChangeOvercast;
+	controller->ChangeOvercastRate = Config->ChangeOvercastRate;
+	controller->ChangeRain = Config->bIsChangeRain;
+	controller->ChangeRainRate = Config->ChangeRainRate;
 }
-

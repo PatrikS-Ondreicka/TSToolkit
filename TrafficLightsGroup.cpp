@@ -1,12 +1,11 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "TrafficLightsGroup.h"
 
 // Sets default values
 ATrafficLightsGroup::ATrafficLightsGroup()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 }
 
@@ -14,10 +13,10 @@ ATrafficLightsGroup::ATrafficLightsGroup()
 void ATrafficLightsGroup::BeginPlay()
 {
 	Super::BeginPlay();
-	_initTrafficLightsList();
+	_InitTrafficLightsList();
 }
 
-void ATrafficLightsGroup::_initTrafficLightsList()
+void ATrafficLightsGroup::_InitTrafficLightsList()
 {
 	if (TrafficLightsList.Num() <= 0)
 	{
@@ -48,4 +47,3 @@ void ATrafficLightsGroup::SetGroupState(ETrafficLightsStates NewState)
 		trafficLights->SetTrafficLightsState(NewState);
 	}
 }
-

@@ -16,7 +16,7 @@ class TSTOOLKIT_API ARandomCarSpawnController : public ACarSpawnController
 
 public:
 	ARandomCarSpawnController()
-		: Super::ACarSpawnController()
+		: Super()
 	{
 	}
 
@@ -26,6 +26,6 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
-	virtual class ACarSource* GetRandomSource();
-	void SpawnCar();
+	virtual class ACarSource* _GetRandomSource();
+	void _SpawnCar();
 };

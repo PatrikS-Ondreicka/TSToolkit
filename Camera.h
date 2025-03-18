@@ -7,7 +7,7 @@
 #include "Camera.generated.h"
 
 /**
- * 
+ *
  */
 UCLASS()
 class TSTOOLKIT_API ACamera : public ACameraActor
@@ -15,7 +15,6 @@ class TSTOOLKIT_API ACamera : public ACameraActor
 	GENERATED_BODY()
 
 public:
-
 	ACamera();
 
 	UPROPERTY(EditAnywhere, Category = "Camera details")
@@ -31,7 +30,7 @@ public:
 	FString SaveDirectory;
 
 private:
-	float _screenshotCountdown;
+	float _ScreenshotCountdown;
 
 public:
 	virtual void Tick(float DeltaTime) override;
@@ -41,5 +40,5 @@ public:
 	void TakeScreenshot();
 
 private:
-	void _autoAction(float DeltaTime);
+	void _AutoAction(float DeltaTime);
 };

@@ -15,7 +15,6 @@ public:
 	// Sets default values for this pawn's properties
 	ACar();
 
-
 	// Components
 	UPROPERTY(EditAnywhere, Category = "Car Components")
 	class UBoxComponent* CarBoxRoot;
@@ -30,34 +29,40 @@ public:
 	class USpotLightComponent* LeftSpotLight;
 
 	UPROPERTY(EditAnywhere, Category = "Car Components")
-	class USpotLightComponent* RigtSpotLight;
+	class USpotLightComponent* LeftSpotLightEffect;
+
+	UPROPERTY(EditAnywhere, Category = "Car Components")
+	class USpotLightComponent* RightSpotLight;
+
+	UPROPERTY(EditAnywhere, Category = "Car Components")
+	class USpotLightComponent* RightSpotLightEffect;
 
 	// Car Details
-	UPROPERTY(EditAnywhere, Category="Car Details")
+	UPROPERTY(EditAnywhere, Category = "Car Details")
 	float StaticSpeed = 50;
 
 protected:
-	bool _isLightsOn = false;
+	bool _IsLightsOn = false;
 
+	// Behavioral attributes
+	class ATrafficLights* _LastTrafficLights;
+	int _MovementPriority = 100;
+	bool _CollisionHandlingState = false;
 
-private:
-	class ACarPath* _path;
-	FVector _currentDestination;
-	bool _reachedDestination = false;
+	// Path attributes
+	FVector _CurrentDestination;
+	bool _ReachedDestination = false;
 
 	// Movement attributes
-	bool _canMove = true;
-	float _distanceAlongSpline = 0;
-
-	// Behaviour attributes
-	int _movementPriority = 100;
-
+	class ACarPath* _Path = nullptr;
+	bool _CanMove = true;
+	float _DistanceAlongSpline = 0;
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:	
+public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
@@ -66,58 +71,59 @@ public:
 
 	void TurnLightsOn();
 	void TurnLightsOff();
-	
-	FORCEINLINE bool HasLargerPriority(ACar* Other)
+
+	// Inline getters
+	FORCEINLINE bool GetLightsOn() const
 	{
-		return _movementPriority < Other->GetMovementPriority();
+		return _IsLightsOn;
 	}
 
-	FORCEINLINE int GetMovementPriority()
+	FORCEINLINE class ATrafficLights* GetLastTrafficLights() const
 	{
-		return _movementPriority;
+		return _LastTrafficLights;
 	}
 
-	FORCEINLINE void SetMovementPriority(int Priority)
+	FORCEINLINE int GetMovementPriority() const
 	{
-		_movementPriority = Priority;
+		return _MovementPriority;
 	}
 
+	// Inline setters
 	FORCEINLINE void SetInitDistanceAlongSpline(float Distance)
 	{
-		_distanceAlongSpline = Distance;
+		_DistanceAlongSpline = Distance;
 	}
-	
+
 	FORCEINLINE void SetPath(ACarPath* Path)
 	{
-		_path = Path;
-	};
+		_Path = Path;
+	}
 
 	FORCEINLINE void SetDestination(FVector Destination)
 	{
-		_currentDestination = Destination;
+		_CurrentDestination = Destination;
 	}
 
 	FORCEINLINE void SetCanMove(bool NewState)
 	{
-		_canMove = NewState;
+		_CanMove = NewState;
 	}
 
 	FORCEINLINE void SetReachedDestination(bool NewValue)
 	{
-		_reachedDestination = NewValue;
+		_ReachedDestination = NewValue;
 	}
 
-	FORCEINLINE bool GetLigtOn()
-	{
-		return _isLightsOn;
-	}
-
-private:
-	void _moveToALocation(FVector location, float speed, float deltaTime);
-	void _moveAlongSpline(class USplineComponent* Spline, float Speed, float DeltaTime);
+protected:
+	void _MoveToLocation(FVector Location, float Speed, float DeltaTime);
+	void _MoveAlongSpline(class USplineComponent* Spline, float Speed, float DeltaTime);
+	void _HandleTrafficLightsBegin(class ATrafficLights* TrafficLights);
+	void _HandleCollisionBegin(ACar* OtherCar, class UPrimitiveComponent* OtherComp);
+	void _HandleCollisionEnd(ACar* OtherCar, class UPrimitiveComponent* OtherComp);
+	void _SetMovementPriority();
 
 	UFUNCTION()
-	virtual void _onBeginOverlap(
+	virtual void _OnBeginOverlap(
 		UPrimitiveComponent* OverlappedComponent,
 		AActor* OtherActor,
 		UPrimitiveComponent* OtherComp,
@@ -127,7 +133,7 @@ private:
 	);
 
 	UFUNCTION()
-	virtual void _onEndOverlap(
+	virtual void _OnEndOverlap(
 		UPrimitiveComponent* OverlappedComponent,
 		AActor* OtherActor,
 		UPrimitiveComponent* OtherComp,

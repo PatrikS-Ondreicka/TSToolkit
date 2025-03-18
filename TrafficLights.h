@@ -7,13 +7,6 @@
 #include "TrafficLights.generated.h"
 
 UENUM()
-enum class EOnLeavePriorityChange
-{
-	None,
-	Largest
-};
-
-UENUM()
 enum class ETrafficLightsStates
 {
 	Green,
@@ -25,11 +18,10 @@ UCLASS()
 class TSTOOLKIT_API ATrafficLights : public AActor
 {
 	GENERATED_BODY()
-	
-public:	
+
+public:
 	// Sets default values for this actor's properties
 	ATrafficLights();
-
 
 	// Traffic Lights Components
 	UPROPERTY(EditAnywhere, Category = "Traffic Lights Components")
@@ -39,7 +31,7 @@ public:
 	class UStaticMeshComponent* TrafficLightsMeshComponent;
 
 	// Green light components
-	UPROPERTY(EditAnywhere,  Category = "Traffic Lights Components")
+	UPROPERTY(EditAnywhere, Category = "Traffic Lights Components")
 	class USpotLightComponent* GreenLightComponent;
 
 	// Orange light components
@@ -54,40 +46,52 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Traffic Lights Details")
 	ETrafficLightsStates CurrentState = ETrafficLightsStates::Green;
 
-	UPROPERTY(EditAnywhere, Category = "Traffic Lights Details")
-	EOnLeavePriorityChange OnLeavePriorityChange = EOnLeavePriorityChange::None;
-
-
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:	
+public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	void SetTrafficLightsState(ETrafficLightsStates NewState);
+	
+	UFUNCTION(BlueprintPure)
+	FORCEINLINE bool IsGreen()
+	{
+		return CurrentState == ETrafficLightsStates::Green;
+	}
+
+	FORCEINLINE bool IsOrange()
+	{
+		return CurrentState == ETrafficLightsStates::Orange;
+	}
+
+	FORCEINLINE bool IsRed()
+	{
+		return CurrentState == ETrafficLightsStates::Red;
+	}
 
 protected:
-	UFUNCTION()
-	virtual void _onBeginOverlap(
-		UPrimitiveComponent* OverlappedComponent,
-		AActor* OtherActor,
-		UPrimitiveComponent* OtherComp,
-		int32 OtherBodyIndex,
-		bool bFromSweep,
-		const FHitResult& SweepResult
-	);
+	//UFUNCTION()
+	//virtual void _OnBeginOverlap(
+	//	UPrimitiveComponent* OverlappedComponent,
+	//	AActor* OtherActor,
+	//	UPrimitiveComponent* OtherComp,
+	//	int32 OtherBodyIndex,
+	//	bool bFromSweep,
+	//	const FHitResult& SweepResult
+	//);
 
-	UFUNCTION()
-	virtual void _onEndOverlap(
-		UPrimitiveComponent* OverlappedComponent,
-		AActor* OtherActor,
-		UPrimitiveComponent* OtherComp,
-		int32 OtherBodyIndex
-	);
+	//UFUNCTION()
+	//virtual void _OnEndOverlap(
+	//	UPrimitiveComponent* OverlappedComponent,
+	//	AActor* OtherActor,
+	//	UPrimitiveComponent* OtherComp,
+	//	int32 OtherBodyIndex
+	//);
 
-	void _stateChange(ETrafficLightsStates NewState);
+	void _SetCarsMove(bool CarsMoveValue);
 
 };

@@ -9,16 +9,16 @@
 void ARandomCarSpawnController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	if (!_timer->CoundownState())
+	if (!_Timer->CountdownState())
 	{
-		_timer->DecrementCountdown(DeltaTime);
+		_Timer->DecrementCountdown(DeltaTime);
 	}
 	else
 	{
-		if (_canSourcesSpawn())
+		if (_CanSourcesSpawn())
 		{
-			SpawnCar();
-			_roundSetUp();
+			_SpawnCar();
+			_RoundSetUp();
 		}
 	}
 }
@@ -28,7 +28,7 @@ void ARandomCarSpawnController::BeginPlay()
 	Super::BeginPlay();
 }
 
-ACarSource* ARandomCarSpawnController::GetRandomSource()
+ACarSource* ARandomCarSpawnController::_GetRandomSource()
 {
 	if (Sources.Num() <= 0)
 	{
@@ -40,14 +40,14 @@ ACarSource* ARandomCarSpawnController::GetRandomSource()
 	return randomSource;
 }
 
-void ARandomCarSpawnController::SpawnCar()
+void ARandomCarSpawnController::_SpawnCar()
 {
-	ACarSource* source = GetRandomSource();
+	ACarSource* source = _GetRandomSource();
 	if (source)
 	{
 		if (source->GetCanSpawn())
 		{
-			source->SpawnCar();
+			source->SpawnCar(_GetRandomCarClass());
 		}
 		else
 		{

@@ -7,7 +7,7 @@
 #include "AutomaticTrafficLights.generated.h"
 
 /**
- * 
+ *
  */
 UCLASS()
 class TSTOOLKIT_API AAutomaticTrafficLights : public ATrafficLights
@@ -18,15 +18,15 @@ public:
 	AAutomaticTrafficLights();
 
 	UPROPERTY(EditAnywhere, Category = "Traffic Lights Details")
-	float RedToGreenLightCountDownTime = 5.0;
-	
+	float RedToGreenLightCountDownTime = 5.0f;
+
 private:
-	float _countdown;
+	float _Countdown;
 
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 private:
-	virtual void _changeStateAfterCountdown();
+	virtual void _ChangeStateAfterCountdown();
 };

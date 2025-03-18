@@ -1,6 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "WeatherController.h"
 #include "Components/SkylightComponent.h"
 #include "Components/DirectionalLightComponent.h"
@@ -31,12 +30,12 @@ AWeatherController::AWeatherController()
 
 	RainComponent = CreateDefaultSubobject<UNiagaraComponent>(TEXT("Rain component"));
 	RainComponent->bAutoActivate = true;
-	_initVolumetricCloud();
+	_InitVolumetricCloud();
 
 	// Timer settings
-	_daytimeChangeTimer = NewObject<UPeriodicTimer>();
-	_overcastChangeTimer = NewObject<UPeriodicTimer>();
-	_rainChangeTimer = NewObject<UPeriodicTimer>();
+	_DaytimeChangeTimer = NewObject<UPeriodicTimer>();
+	_OvercastChangeTimer = NewObject<UPeriodicTimer>();
+	_RainChangeTimer = NewObject<UPeriodicTimer>();
 }
 
 // Called when the game starts or when spawned
@@ -46,15 +45,15 @@ void AWeatherController::BeginPlay()
 	SetWeather(CurrentDayTime, CurrentOvercast);
 	SetRain(CurrentRain);
 	RainComponent->ActivateSystem();
-	_daytimeChangeTimer->SetInitValue(ChangeDayTimeRate);
-	_overcastChangeTimer->SetInitValue(ChangeOvercastRate);
-	_rainChangeTimer->SetInitValue(ChangeRainRate);
+	_DaytimeChangeTimer->SetInitValue(ChangeDayTimeRate);
+	_OvercastChangeTimer->SetInitValue(ChangeOvercastRate);
+	_RainChangeTimer->SetInitValue(ChangeRainRate);
 }
 
 // Called every frame
-void AWeatherController::Tick(float DeltaTime)
+void AWeatherController::Tick(float deltaTime)
 {
-	Super::Tick(DeltaTime);
+	Super::Tick(deltaTime);
 	if (!(ChangeDayTime || ChangeOvercast || ChangeRain))
 	{
 		return;
@@ -67,7 +66,7 @@ void AWeatherController::Tick(float DeltaTime)
 
 	if (ChangeDayTime)
 	{
-		if (_handleTimer(_daytimeChangeTimer, DeltaTime))
+		if (_HandleTimer(_DaytimeChangeTimer, deltaTime))
 		{
 			dayTime = GetNextDaytimeType(CurrentDayTime);
 			weatherChange = true;
@@ -76,7 +75,7 @@ void AWeatherController::Tick(float DeltaTime)
 
 	if (ChangeOvercast)
 	{
-		if (_handleTimer(_overcastChangeTimer, DeltaTime))
+		if (_HandleTimer(_OvercastChangeTimer, deltaTime))
 		{
 			overcast = GetNextOvercastType(CurrentOvercast);
 			weatherChange = true;
@@ -85,7 +84,7 @@ void AWeatherController::Tick(float DeltaTime)
 
 	if (ChangeRain)
 	{
-		if (_handleTimer(_rainChangeTimer, DeltaTime))
+		if (_HandleTimer(_RainChangeTimer, deltaTime))
 		{
 			rain = GetNextRainType(CurrentRain);
 			weatherChange = true;
@@ -109,11 +108,11 @@ void AWeatherController::SetWeather(EDayTimeTypes time, EOvercastTypes overcast)
 {
 	if (time == EDayTimeTypes::Day)
 	{
-		_setDay(overcast);
+		_SetDay(overcast);
 	}
 	else if (time == EDayTimeTypes::Night)
 	{
-		_setNight(overcast);
+		_SetNight(overcast);
 	}
 	else {
 		UE_LOG(LogTemp, Warning, TEXT("Invalid day time"));
@@ -124,44 +123,44 @@ void AWeatherController::SetRain(ERainTypes rain)
 {
 	if (rain == ERainTypes::NoRain)
 	{
-		_setNoRain();
+		_SetNoRain();
 	}
 	else if (rain == ERainTypes::Rain)
 	{
-		_setRain();
+		_SetRain();
 	}
 	else {
 		UE_LOG(LogTemp, Warning, TEXT("Invalid rain type"));
 	}
 }
 
-void AWeatherController::_setDay(EOvercastTypes overcast)
+void AWeatherController::_SetDay(EOvercastTypes overcast)
 {
-	float sunIntentisy = (overcast == EOvercastTypes::Clear) ? DaySunIntensity : DayOvercastIntensity;
-	Sun->SetIntensity(sunIntentisy);
+	float sunIntensity = (overcast == EOvercastTypes::Clear) ? DaySunIntensity : DayOvercastIntensity;
+	Sun->SetIntensity(sunIntensity);
 	Sun->SetLightSourceAngle(2.0f);
 	FRotator newRotation = FRotator(270.0f, -80.0f, 270.0f);
 	Sun->SetWorldRotation(newRotation);
-	_setNightForControllers(false);
-	_setCloudOvercast(overcast);
-	_turnOffLamps();
+	_SetNightForControllers(false);
+	_SetCloudOvercast(overcast);
+	_TurnOffLamps();
 	CurrentDayTime = EDayTimeTypes::Day;
 }
 
-void AWeatherController::_setNight(EOvercastTypes overcast)
+void AWeatherController::_SetNight(EOvercastTypes overcast)
 {
-	float sunIntentisy = (overcast == EOvercastTypes::Clear) ? NightSunIntensity : NightOvercastIntensity;
-	Sun->SetIntensity(sunIntentisy);
+	float sunIntensity = (overcast == EOvercastTypes::Clear) ? NightSunIntensity : NightOvercastIntensity;
+	Sun->SetIntensity(sunIntensity);
 	Sun->SetLightSourceAngle(2.0f);
 	FRotator newRotation = FRotator(270.0f, -80.0f, 270.0f);
 	Sun->SetWorldRotation(newRotation);
-	_setNightForControllers(true);
-	_setCloudOvercast(overcast);
-	_turnOnLamps();
+	_SetNightForControllers(true);
+	_SetCloudOvercast(overcast);
+	_TurnOnLamps();
 	CurrentDayTime = EDayTimeTypes::Night;
 }
 
-void AWeatherController::_setCloudOvercast(EOvercastTypes overcast)
+void AWeatherController::_SetCloudOvercast(EOvercastTypes overcast)
 {
 	if (overcast == EOvercastTypes::Clear)
 	{
@@ -184,21 +183,21 @@ void AWeatherController::_setCloudOvercast(EOvercastTypes overcast)
 	}
 }
 
-void AWeatherController::_turnOnLamps()
+void AWeatherController::_TurnOnLamps()
 {
 	TArray<AActor*> found;
 	GS::GetAllActorsOfClass(GetWorld(), ALamp::StaticClass(), found);
 	for (AActor* actor : found)
 	{
 		ALamp* lamp = Cast<ALamp>(actor);
-		if (lamp && lamp->TurnOnWhenNight)
+		if (lamp && lamp->bTurnOnWhenNight)
 		{
 			lamp->TurnOn();
 		}
 	}
 }
 
-void AWeatherController::_turnOffLamps()
+void AWeatherController::_TurnOffLamps()
 {
 	TArray<AActor*> found;
 	GS::GetAllActorsOfClass(GetWorld(), ALamp::StaticClass(), found);
@@ -212,7 +211,7 @@ void AWeatherController::_turnOffLamps()
 	}
 }
 
-void AWeatherController::_setNightForControllers(bool state)
+void AWeatherController::_SetNightForControllers(bool state)
 {
 	TArray<AActor*> found;
 	GS::GetAllActorsOfClass(GetWorld(), ACarSpawnController::StaticClass(), found);
@@ -226,7 +225,7 @@ void AWeatherController::_setNightForControllers(bool state)
 	}
 }
 
-void AWeatherController::_initVolumetricCloud()
+void AWeatherController::_InitVolumetricCloud()
 {
 	if (VolumetricCloud)
 	{
@@ -236,7 +235,7 @@ void AWeatherController::_initVolumetricCloud()
 	}
 }
 
-void AWeatherController::_setRain()
+void AWeatherController::_SetRain()
 {
 	if (RainComponent)
 	{
@@ -245,7 +244,7 @@ void AWeatherController::_setRain()
 	CurrentRain = ERainTypes::Rain;
 }
 
-void AWeatherController::_setNoRain()
+void AWeatherController::_SetNoRain()
 {
 	if (RainComponent)
 	{
@@ -254,10 +253,10 @@ void AWeatherController::_setNoRain()
 	CurrentRain = ERainTypes::NoRain;
 }
 
-bool AWeatherController::_handleTimer(UPeriodicTimer* timer, float DeltaTime)
+bool AWeatherController::_HandleTimer(UPeriodicTimer* timer, float deltaTime)
 {
-	timer->DecrementCountdown(DeltaTime);
-	bool currentState = timer->CoundownState();
+	timer->DecrementCountdown(deltaTime);
+	bool currentState = timer->CountdownState();
 	if (currentState)
 	{
 		timer->ResetCountdown();

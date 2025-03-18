@@ -22,7 +22,7 @@ public:
 	TArray<ACamera*> Cameras;
 
 	UPROPERTY(EditAnywhere, Category = "Controller Details")
-	bool RegisterAllAtBeginPlay = true;
+	bool bRegisterAllAtBeginPlay = true;
 
 	UPROPERTY(EditAnywhere, Category = "Controller Details")
 	float ScreenshotInterval = 10.0f;
@@ -31,14 +31,13 @@ public:
 	float DelayBetweenScreenshots = 0.1f;
 
 protected:
-	UPeriodicTimer* _timer;
+	UPeriodicTimer* _Timer;
 
 private:
-	float _currentCameraCountdown;
-	int _screenshotsTakenCount;
-	int _currentCameraIndex;
-	ACamera* _currentCamera;
-
+	float _CurrentCameraCountdown;
+	int _ScreenshotsTakenCount;
+	int _CurrentCameraIndex;
+	ACamera* _CurrentCamera;
 
 protected:
 	virtual void BeginPlay() override;
@@ -47,5 +46,5 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 private:
-	void _registerAllCameras();
+	void _RegisterAllCameras();
 };

@@ -13,8 +13,8 @@ UCLASS()
 class TSTOOLKIT_API ATrafficLightsGroup : public AActor
 {
 	GENERATED_BODY()
-	
-public:	
+
+public:
 	// Sets default values for this actor's properties
 	ATrafficLightsGroup();
 
@@ -27,14 +27,12 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Group Details")
 	ETrafficLightsStates DefaultState = ETrafficLightsStates::Red;
 
-private:
-
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-	virtual void _initTrafficLightsList();
+	virtual void _InitTrafficLightsList();
 
-public:	
+public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 

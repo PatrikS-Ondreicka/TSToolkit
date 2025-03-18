@@ -17,12 +17,12 @@ UCLASS()
 class TSTOOLKIT_API ARoad : public AActor
 {
 	GENERATED_BODY()
-	
-public:	
+
+public:
 	// Sets default values for this actor's properties
 	ARoad();
 
-	UPROPERTY(EditAnywhere,  Category = "Road Components")
+	UPROPERTY(EditAnywhere, Category = "Road Components")
 	class USplineComponent* RoadSpline;
 
 	UPROPERTY(EditAnywhere, Category = "Road Components")
@@ -35,11 +35,11 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:	
+public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 	void OnConstruction(const FTransform& Transform) override;
 
 private:
-	void _setUpMesh();
+	void _SetUpMesh();
 };

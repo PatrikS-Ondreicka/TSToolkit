@@ -17,7 +17,7 @@ ACamera::ACamera()
 	cameraComponent->bConstrainAspectRatio = false;
 
 	SaveDirectory = FPaths::ProjectDir() + "Screenshots/" + CameraName + "/";
-	_screenshotCountdown = ScreenshotInterval;
+	_ScreenshotCountdown = ScreenshotInterval;
 }
 
 void ACamera::Tick(float DeltaTime)
@@ -25,7 +25,7 @@ void ACamera::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	if (AutomaticScreenshots)
 	{
-		_autoAction(DeltaTime);
+		_AutoAction(DeltaTime);
 	}
 }
 
@@ -53,20 +53,20 @@ void ACamera::TakeScreenshot()
 
 	// Screenshot settings
 	FHighResScreenshotConfig* screenshotConfig = &GetHighResScreenshotConfig();
-	screenshotConfig->ResolutionMultiplier = 15; 
-	screenshotConfig->bCaptureHDR = false; 
-	screenshotConfig->bMaskEnabled = false; 
+	screenshotConfig->ResolutionMultiplier = 15;
+	screenshotConfig->bCaptureHDR = false;
+	screenshotConfig->bMaskEnabled = false;
 
 	// Take screenshot
 	FScreenshotRequest::RequestScreenshot(filepath, false, false);
 }
 
-void ACamera::_autoAction(float DeltaTime)
+void ACamera::_AutoAction(float deltaTime)
 {
-	_screenshotCountdown -= DeltaTime;
-	if (_screenshotCountdown <= 0)
+	_ScreenshotCountdown -= deltaTime;
+	if (_ScreenshotCountdown <= 0)
 	{
-		_screenshotCountdown = ScreenshotInterval;
+		_ScreenshotCountdown = ScreenshotInterval;
 		TakeScreenshot();
 	}
 }

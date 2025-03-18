@@ -1,6 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "MainMenu.h"
 #include "TSToolkitGameMode.h"
 #include "Kismet/GameplayStatics.h"
@@ -10,16 +9,16 @@ typedef UGameplayStatics GS;
 UMainMenu::UMainMenu(const FObjectInitializer& ObjectInitializer)
 	: UUserWidget(ObjectInitializer)
 {
-	_simConfig = NewObject<USimConfig>();
+	_SimConfig = NewObject<USimConfig>();
 }
 
 void UMainMenu::StartButtonClick()
 {
-	FString levelPath = _simConfig->GetLevelPath();
+	FString levelPath = _SimConfig->GetLevelPath();
 	UWorld* world = GetWorld();
-	AGameModeBase* GameMode = GS::GetGameMode(world);
-	ATSToolkitGameMode* tsToolkitGameMode = Cast<ATSToolkitGameMode>(GameMode);
-	_simConfig->SaveConfig();
+	AGameModeBase* gameMode = GS::GetGameMode(world);
+	ATSToolkitGameMode* tsToolkitGameMode = Cast<ATSToolkitGameMode>(gameMode);
+	_SimConfig->SaveConfig();
 	if (tsToolkitGameMode)
 	{
 		GS::OpenLevel(world, FName(*levelPath));
@@ -30,17 +29,17 @@ void UMainMenu::StartButtonClick()
 	}
 }
 
-TArray<FString> UMainMenu::GetLevels()
+TArray<FString> UMainMenu::GetLevels() const
 {
 	return USimConfig::GetLevelNames();
 }
 
-TArray<FString> UMainMenu::GetCarSpawnControllerClasses()
+TArray<FString> UMainMenu::GetCarSpawnControllerClasses() const
 {
 	return USimConfig::GetCarSpawnControllerClassesNames();
 }
 
 void UMainMenu::SaveConfig()
 {
-	_simConfig->SaveConfig();
+	_SimConfig->SaveConfig();
 }

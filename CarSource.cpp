@@ -1,6 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "CarSource.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/BoxComponent.h"
@@ -28,7 +27,6 @@ ACarSource::ACarSource()
 	SpawnCheckBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Source Spawn Check Box Component"));
 	SpawnCheckBox->SetupAttachment(RootComponent);
 
-
 	// Set up of event methods
 	SpawnCheckBox->SetCollisionProfileName("OverlapAll");
 	SpawnCheckBox->SetGenerateOverlapEvents(true);
@@ -40,11 +38,11 @@ void ACarSource::BeginPlay()
 	Super::BeginPlay();
 
 	// Set up of spawn check delegates
-	SpawnCheckBox->OnComponentBeginOverlap.AddDynamic(this, &ACarSource::_onSpawnCheckBeginOverlap);
-	SpawnCheckBox->OnComponentEndOverlap.AddDynamic(this, &ACarSource::_onSpawnCheckEndOverlap);
+	SpawnCheckBox->OnComponentBeginOverlap.AddDynamic(this, &ACarSource::_OnSpawnCheckBeginOverlap);
+	SpawnCheckBox->OnComponentEndOverlap.AddDynamic(this, &ACarSource::_OnSpawnCheckEndOverlap);
 
 	// Sort Car paths by probability
-	_initPath();
+	_InitPath();
 }
 
 // Called every frame
@@ -56,16 +54,20 @@ void ACarSource::Tick(float DeltaTime)
 void ACarSource::OnConstruction(const FTransform& Transform)
 {
 	FRotator actorRotator = GetActorRotation();
-	FVector WorldOffset = SpawnCheckBox->GetComponentLocation() - GetActorLocation();
-	FVector LocalOffset =  GetActorTransform().InverseTransformVector(WorldOffset);
-	FVector NewPosition = GetActorLocation() + GetActorRotation().RotateVector(LocalOffset);
-	SpawnCheckBox->SetWorldLocation(NewPosition);
+	FVector worldOffset = SpawnCheckBox->GetComponentLocation() - GetActorLocation();
+	FVector localOffset = GetActorTransform().InverseTransformVector(worldOffset);
+	FVector newPosition = GetActorLocation() + GetActorRotation().RotateVector(localOffset);
+	SpawnCheckBox->SetWorldLocation(newPosition);
 }
 
-
-void ACarSource::SpawnCar()
+void ACarSource::SpawnDefaultCar()
 {
-	if (!_canSpawn)
+	SpawnCar(DefaultCarClass);
+}
+
+void ACarSource::SpawnCar(TSubclassOf<ACar> CarClass)
+{
+	if (!_CanSpawn)
 	{
 		return;
 	}
@@ -83,8 +85,7 @@ void ACarSource::SpawnCar()
 		return;
 	}
 
-	ACarPath* selectedPath = _selectPath();
-
+	ACarPath* selectedPath = _SelectPath();
 
 	if (selectedPath == nullptr)
 	{
@@ -112,58 +113,57 @@ void ACarSource::SpawnCar()
 		ERROR_MSG("Failed to spawn car!");
 		return;
 	}
-	
+
 	// Car defaults init
 	spawnedCar->SetDestination(carTargetLocation);
 	spawnedCar->SetPath(selectedPath);
 	spawnedCar->StaticSpeed = CarStaticSpeed;
-	spawnedCar->SetMovementPriority(CarMovementPriority);
 	if (IsNight)
 	{
 		spawnedCar->TurnLightsOn();
 	}
-	else 
+	else
 	{
 		spawnedCar->TurnLightsOff();
 	}
-	
+
 	// Init distance along spline
 	float initDistance = selectedPath->Path->GetDistanceAlongSplineAtLocation(carSpawLocation, ESplineCoordinateSpace::World);
 	spawnedCar->SetInitDistanceAlongSpline(initDistance);
 }
 
-void ACarSource::_onSpawnCheckBeginOverlap(
-	UPrimitiveComponent* OverlappedComponent, 
-	AActor* OtherActor, 
-	UPrimitiveComponent* OtherComp, 
+void ACarSource::_OnSpawnCheckBeginOverlap(
+	UPrimitiveComponent* OverlappedComponent,
+	AActor* OtherActor,
+	UPrimitiveComponent* OtherComp,
 	int32 OtherBodyIndex,
-	bool bFromSweep, 
+	bool bFromSweep,
 	const FHitResult& SweepResult)
 {
 	ACar* other = Cast<ACar>(OtherActor);
 	if (other != nullptr)
 	{
-		_canSpawn = false;
+		_CanSpawn = false;
 	}
 }
 
-void ACarSource::_onSpawnCheckEndOverlap(
-	UPrimitiveComponent* OverlappedComponent, 
-	AActor* OtherActor, 
-	UPrimitiveComponent* OtherComp, 
+void ACarSource::_OnSpawnCheckEndOverlap(
+	UPrimitiveComponent* OverlappedComponent,
+	AActor* OtherActor,
+	UPrimitiveComponent* OtherComp,
 	int32 OtherBodyIndex)
 {
 	ACar* other = Cast<ACar>(OtherActor);
 	if (other != nullptr)
 	{
-		_canSpawn = true;
+		_CanSpawn = true;
 	}
 }
 
-ACarPath* ACarSource::_selectPath()
+ACarPath* ACarSource::_SelectPath()
 {
-	float randNum = FMath::RandRange(0.0, 1.0);
-	float cumulative = 0.0;
+	float randNum = FMath::RandRange(0.0f, 1.0f);
+	float cumulative = 0.0f;
 	for (auto path : Paths)
 	{
 		cumulative += path->Probability;
@@ -175,14 +175,14 @@ ACarPath* ACarSource::_selectPath()
 	return nullptr;
 }
 
-void ACarSource::_initPath()
+void ACarSource::_InitPath()
 {
 	if (Paths.Num() < 2)
 	{
 		return;
 	}
 
-	float cumulative = 0.0;
+	float cumulative = 0.0f;
 	for (auto path : Paths)
 	{
 		cumulative += path->Probability;
@@ -193,15 +193,9 @@ void ACarSource::_initPath()
 		MSG("Warning! Sum of probabilities of car paths is not equal to 1.0");
 	}
 
-	Algo::Sort(Paths, 
+	Algo::Sort(Paths,
 		[](ACarPath* left, ACarPath* right)
 		{
 			return left->Probability < right->Probability;
 		});
 }
-
-
-
-
-
-

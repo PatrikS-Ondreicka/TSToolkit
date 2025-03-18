@@ -15,7 +15,7 @@ enum class ECarSpawnControllerClasses
 };
 
 /**
- * 
+ *
  */
 UCLASS()
 class TSTOOLKIT_API USimConfig : public UObject
@@ -24,7 +24,7 @@ class TSTOOLKIT_API USimConfig : public UObject
 
 private:
 	static const FString _MainMenuLevelName;
-	
+
 public:
 
 	USimConfig();
@@ -34,56 +34,56 @@ public:
 	static const FString ConfigDirPath;
 
 	// Level details
-	static const FString LevelDirrPath;
+	static const FString LevelDirPath;
 
-	UPROPERTY(EditAnywhere, Category = "Level details")
+	UPROPERTY(EditAnywhere, Category = "Level Details")
 	FString RelativeLevelPath;
 
 	// Simulation global details
-	UPROPERTY(EditAnywhere, Category = "Simulation details")
+	UPROPERTY(EditAnywhere, Category = "Simulation Details")
 	float SimulationDuration;
 
 	// Car spawn details
-	UPROPERTY(EditAnywhere, Category = "Car spawning details")
+	UPROPERTY(EditAnywhere, Category = "Car Spawning Details")
 	ECarSpawnControllerClasses ControllerClassName;
 
-	UPROPERTY(EditAnywhere, Category = "Car spawning details")
+	UPROPERTY(EditAnywhere, Category = "Car Spawning Details")
 	float CarsSpawnRate;
 
 	// Screenshot details
-	UPROPERTY(EditAnywhere, Category = "Screenshot details")
+	UPROPERTY(EditAnywhere, Category = "Screenshot Details")
 	float ScreenshotInterval;
 
-	UPROPERTY(EditAnywhere, Category = "Screenshot details")
+	UPROPERTY(EditAnywhere, Category = "Screenshot Details")
 	float DelayBetweenScreenshots;
 
 	// Weather details
-	UPROPERTY(EditAnywhere, Category = "Weather details")
-	bool IsNight;
+	UPROPERTY(EditAnywhere, Category = "Weather Details")
+	bool bIsNight;
 
-	UPROPERTY(EditAnywhere, Category = "Weather details")
-	bool IsOvercast;
+	UPROPERTY(EditAnywhere, Category = "Weather Details")
+	bool bIsOvercast;
 
-	UPROPERTY(EditAnywhere, Category = "Weather details")
-	bool IsRain;
+	UPROPERTY(EditAnywhere, Category = "Weather Details")
+	bool bIsRain;
 
 	// Weather change details
-	UPROPERTY(EditAnywhere, Category = "Weather change details")
-	bool IsChangeDayTime;
+	UPROPERTY(EditAnywhere, Category = "Weather Change Details")
+	bool bIsChangeDayTime;
 
-	UPROPERTY(EditAnywhere, Category = "Weather change details")
+	UPROPERTY(EditAnywhere, Category = "Weather Change Details")
 	float ChangeDayTimeRate;
 
-	UPROPERTY(EditAnywhere, Category = "Weather change details")
-	bool IsChangeOvercast;
+	UPROPERTY(EditAnywhere, Category = "Weather Change Details")
+	bool bIsChangeOvercast;
 
-	UPROPERTY(EditAnywhere, Category = "Weather change settings")
+	UPROPERTY(EditAnywhere, Category = "Weather Change Settings")
 	float ChangeOvercastRate;
 
-	UPROPERTY(EditAnywhere, Category = "Weather change details")
-	bool IsChangeRain;
+	UPROPERTY(EditAnywhere, Category = "Weather Change Details")
+	bool bIsChangeRain;
 
-	UPROPERTY(EditAnywhere, Category = "Weather change settings")
+	UPROPERTY(EditAnywhere, Category = "Weather Change Settings")
 	float ChangeRainRate;
 
 	// Static methods
@@ -97,7 +97,7 @@ public:
 public:
 	FORCEINLINE FString GetLevelPath()
 	{
-		return LevelDirrPath + RelativeLevelPath+ "." + RelativeLevelPath;
+		return LevelDirPath + RelativeLevelPath + "." + RelativeLevelPath;
 	}
 
 	UFUNCTION(BlueprintCallable)

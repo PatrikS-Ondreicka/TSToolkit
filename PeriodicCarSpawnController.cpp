@@ -1,13 +1,11 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "PeriodicCarSpawnController.h"
 #include "CarSource.h"
 
 APeriodicCarSpawnController::APeriodicCarSpawnController()
 	: Super()
 {
-
 }
 
 void APeriodicCarSpawnController::BeginPlay()
@@ -15,35 +13,31 @@ void APeriodicCarSpawnController::BeginPlay()
 	Super::BeginPlay();
 }
 
-void APeriodicCarSpawnController::_roundSetUp()
+void APeriodicCarSpawnController::_RoundSetUp()
 {
-	Super::_roundSetUp();
+	Super::_RoundSetUp();
 }
-
 
 void APeriodicCarSpawnController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	if (!_timer->CoundownState())
+	if (!_Timer->CountdownState())
 	{
-		_timer->DecrementCountdown(DeltaTime);
+		_Timer->DecrementCountdown(DeltaTime);
 		return;
 	}
 
-	if (_canSourcesSpawn())
+	if (_CanSourcesSpawn())
 	{
-		_spawnAtAllSources();
-		_roundSetUp();
+		_SpawnAtAllSources();
+		_RoundSetUp();
 	}
 }
 
-void APeriodicCarSpawnController::_spawnAtAllSources()
+void APeriodicCarSpawnController::_SpawnAtAllSources()
 {
-	for (auto carSource : Sources)
+	for (auto CarSource : Sources)
 	{
-		carSource->SpawnCar();
+		CarSource->SpawnCar(_GetRandomCarClass());
 	}
 }
-
-

@@ -13,8 +13,8 @@ UCLASS()
 class TSTOOLKIT_API ATrafficLightsGroupController : public AActor
 {
 	GENERATED_BODY()
-	
-public:	
+
+public:
 	// Sets default values for this actor's properties
 	ATrafficLightsGroupController();
 
@@ -22,17 +22,17 @@ public:
 	TArray<ATrafficLightsGroup*> TrafficLightsGroups;
 
 	UPROPERTY(EditAnywhere, Category = "Controller Details")
-	bool RegisterAllAtBeginPlay = true;
+	bool bRegisterAllAtBeginPlay = true;
 
 private:
-	int _currentGroupIndex = 0;
-	float _currentGroupCountDown = 0.0f;
+	int _CurrentGroupIndex = 0;
+	float _CurrentGroupCountDown = 0.0f;
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:	
+public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
@@ -41,12 +41,12 @@ public:
 	// Attribute getters
 	FORCEINLINE int GetCurrentGroupIndex()
 	{
-		return _currentGroupIndex;
+		return _CurrentGroupIndex;
 	}
 
-	FORCEINLINE float GetCurrentGroupCoundown()
+	FORCEINLINE float GetCurrentGroupCountDown()
 	{
-		return _currentGroupCountDown;
+		return _CurrentGroupCountDown;
 	}
 
 	FORCEINLINE ATrafficLightsGroup* GetCurrentGroup()
@@ -55,10 +55,10 @@ public:
 		{
 			return nullptr;
 		}
-		return TrafficLightsGroups[_currentGroupIndex];
+		return TrafficLightsGroups[_CurrentGroupIndex];
 	}
 
 private:
-	void _registerAllGroups();
-	void _setStateForGroup(int Index, ETrafficLightsStates State);
+	void _RegisterAllGroups();
+	void _SetStateForGroup(int Index, ETrafficLightsStates State);
 };

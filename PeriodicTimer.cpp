@@ -5,7 +5,7 @@
 
 UPeriodicTimer::UPeriodicTimer()
 {
-	_initValue = 10.f;
-	_currentCountdown = _initValue;
+	_InitValue = 10.f;
+	_CurrentCountdown = _InitValue;
 }
 
