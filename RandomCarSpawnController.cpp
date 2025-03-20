@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "CarSource.h"
 #include "RandomCarSpawnController.h"
+#include "CarSource.h"
 
 #define MSG(str) GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, TEXT(str));
 #define ERROR_MSG(str) GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT(str));
@@ -9,17 +9,15 @@
 void ARandomCarSpawnController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	if (!_Timer->CountdownState())
+	if (!_TimerRunOut)
 	{
-		_Timer->DecrementCountdown(DeltaTime);
+		return;
 	}
-	else
+
+	if (_CanSourcesSpawn())
 	{
-		if (_CanSourcesSpawn())
-		{
-			_SpawnCar();
-			_RoundSetUp();
-		}
+		_SpawnCar();
+		_RoundSetUp();
 	}
 }
 

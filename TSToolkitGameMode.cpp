@@ -17,17 +17,16 @@ typedef UGameplayStatics GS;
 
 ATSToolkitGameMode::ATSToolkitGameMode()
 {
+	PrimaryActorTick.bStartWithTickEnabled = true;
 	PrimaryActorTick.bCanEverTick = true;
 	ConstructorHelpers::FClassFinder<UUserWidget> mainMenuWidgetClass(TEXT("WidgetBlueprint'/Game/BP/UI/BP_MainMenu.BP_MainMenu_C'"));
 	ConstructorHelpers::FClassFinder<AWeatherController> weatherControllerClass(TEXT("Blueprint'/Game/BP/BP_WeatherController.BP_WeatherController_C'"));
 	MainMenuWidgetClass = mainMenuWidgetClass.Class;
 	WeatherControllerClass = weatherControllerClass.Class;
-	_Timer = NewObject<UPeriodicTimer>();
 }
 
 void ATSToolkitGameMode::BeginPlay()
 {
-	Super::BeginPlay();
 	if (IsMainMenu())
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Is main menu"));
@@ -43,20 +42,15 @@ void ATSToolkitGameMode::BeginPlay()
 	}
 }
 
+void ATSToolkitGameMode::_EndLevel()
+{
+	UWorld* world = GetWorld();
+	UKismetSystemLibrary::QuitGame(world, world->GetFirstPlayerController(), EQuitPreference::Quit, true);
+}
+
 void ATSToolkitGameMode::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	if (!bIsRunning)
-	{
-		return;
-	}
-		
-	_Timer->DecrementCountdown(DeltaTime);	
-	if (_Timer->CountdownState())
-	{
-		FGenericPlatformMisc::RequestExit(false);
-	}
-	
 }
 
 bool ATSToolkitGameMode::IsMainMenu() const
@@ -85,7 +79,6 @@ void ATSToolkitGameMode::LoadLevel(USimConfig* Config)
 	_LevelViewportSetup();
 	UWorld* world = GetWorld();
 	_SetUpLevel(Config);
-	bIsRunning = true;
 }
 
 void ATSToolkitGameMode::_UIViewportSetup(UUserWidget* Widget)
@@ -113,7 +106,11 @@ void ATSToolkitGameMode::_SetUpLevel(USimConfig* Config)
 	_SetUpCarSpawnController(Config);
 	_SetUpScreenshotController(Config);
 	_SetUpWeatherController(Config);
-	_Timer->SetInitValue(Config->SimulationDuration);
+	
+	// End timer setup
+	FTimerHandle TimerHandle;
+	GetWorldTimerManager().SetTimer(TimerHandle, this, &ATSToolkitGameMode::_EndLevel, Config->SimulationDuration, false);
+
 }
 
 void ATSToolkitGameMode::_SetUpCarSpawnController(USimConfig* Config)

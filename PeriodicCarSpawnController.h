@@ -20,7 +20,6 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-	virtual void _RoundSetUp() override;
 
 public:
 	// Called every frame

@@ -4,7 +4,6 @@
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Engine/GameEngine.h"
-#include "PeriodicTimer.h"
 #include "Camera.h"
 
 // Sets default values
@@ -12,22 +11,39 @@ AScreenshotController::AScreenshotController()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-	_Timer = NewObject<UPeriodicTimer>();
-	_CurrentCamera = nullptr;
-	_CurrentCameraIndex = -1;
-	_CurrentCameraCountdown = 0;
-	_ScreenshotsTakenCount = 0;
+	
 }
 
 // Called when the game starts or when spawned
 void AScreenshotController::BeginPlay()
 {
 	Super::BeginPlay();
-	_Timer->SetInitValue(ScreenshotInterval);
 	if (bRegisterAllAtBeginPlay)
 	{
 		_RegisterAllCameras();
 	}
+	_ResetScreenshotValues();
+	_ResetTimer();
+}
+
+void AScreenshotController::_ResetScreenshotValues()
+{
+	_CurrentCamera = nullptr;
+	_CurrentCameraIndex = -1;
+	_CurrentCameraCountdown = 0;
+	_ScreenshotsTakenCount = 0;
+}
+
+void AScreenshotController::_TimerAction()
+{
+	_TimerRunOut = true;
+}
+
+void AScreenshotController::_ResetTimer()
+{
+	FTimerHandle timerHandle;
+	_TimerRunOut = false;
+	GetWorldTimerManager().SetTimer(timerHandle, this, &AScreenshotController::_TimerAction, ScreenshotInterval, false);
 }
 
 // Called every frame
@@ -39,17 +55,14 @@ void AScreenshotController::Tick(float DeltaTime)
 		return;
 	}
 
-	if (_Timer->CountdownState())
+	if (_TimerRunOut)
 	{
 		_CurrentCameraCountdown -= DeltaTime;
 
 		if (_ScreenshotsTakenCount == Cameras.Num())
 		{
-			_Timer->ResetCountdown();
-			_CurrentCamera = nullptr;
-			_CurrentCameraIndex = -1;
-			_CurrentCameraCountdown = 0;
-			_ScreenshotsTakenCount = 0;
+			_ResetScreenshotValues();
+			_ResetTimer();
 			return;
 		}
 
@@ -64,10 +77,6 @@ void AScreenshotController::Tick(float DeltaTime)
 				_ScreenshotsTakenCount++;
 			}
 		}
-	}
-	else
-	{
-		_Timer->DecrementCountdown(DeltaTime);
 	}
 }
 

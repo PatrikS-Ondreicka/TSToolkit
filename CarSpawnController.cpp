@@ -2,7 +2,6 @@
 
 #include "CarSpawnController.h"
 #include "CarSource.h"
-#include "PeriodicTimer.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 
@@ -52,15 +51,12 @@ ACarSpawnController::ACarSpawnController()
 		}
 	}
 
-	_Timer = NewObject<UPeriodicTimer>();
-	_Timer->SetInitValue(60.0f);
 }
 
 // Called when the game starts or when spawned
 void ACarSpawnController::BeginPlay()
 {
 	Super::BeginPlay();
-	_Timer->SetInitValue(SpawnRate);
 	if (bRegisterAllAtBeginPlay)
 	{
 		_RegisterAllSources();
@@ -72,6 +68,18 @@ void ACarSpawnController::BeginPlay()
 	}
 
 	SetNight(_IsNight);
+}
+
+void ACarSpawnController::_RoundSetUp()
+{
+	_TimerRunOut = false;
+	FTimerHandle timerHandle;
+	GetWorldTimerManager().SetTimer(timerHandle, this, &ACarSpawnController::_TimerAction, SpawnRate, false);
+}
+
+void ACarSpawnController::_TimerAction()
+{
+	_TimerRunOut = true;
 }
 
 // Called every frame
@@ -105,11 +113,6 @@ void ACarSpawnController::_RegisterAllSources()
 			Sources.Add(source);
 		}
 	}
-}
-
-void ACarSpawnController::_RoundSetUp()
-{
-	_Timer->ResetCountdown();
 }
 
 bool ACarSpawnController::_CanSourcesSpawn()

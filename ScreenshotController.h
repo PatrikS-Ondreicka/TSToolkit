@@ -3,7 +3,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "PeriodicTimer.h"
 #include "GameFramework/Actor.h"
 #include "ScreenshotController.generated.h"
 
@@ -30,17 +29,18 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Controller Details")
 	float DelayBetweenScreenshots = 0.1f;
 
-protected:
-	UPeriodicTimer* _Timer;
-
 private:
 	float _CurrentCameraCountdown;
 	int _ScreenshotsTakenCount;
 	int _CurrentCameraIndex;
 	ACamera* _CurrentCamera;
+	bool _TimerRunOut = false;
 
 protected:
 	virtual void BeginPlay() override;
+	virtual void _TimerAction();
+	virtual void _ResetTimer();
+	virtual void _ResetScreenshotValues();
 
 public:
 	virtual void Tick(float DeltaTime) override;

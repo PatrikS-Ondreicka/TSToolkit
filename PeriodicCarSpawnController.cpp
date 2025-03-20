@@ -13,17 +13,11 @@ void APeriodicCarSpawnController::BeginPlay()
 	Super::BeginPlay();
 }
 
-void APeriodicCarSpawnController::_RoundSetUp()
-{
-	Super::_RoundSetUp();
-}
-
 void APeriodicCarSpawnController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	if (!_Timer->CountdownState())
+	if (!_TimerRunOut)
 	{
-		_Timer->DecrementCountdown(DeltaTime);
 		return;
 	}
 

@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "PeriodicTimer.h"
 #include "Car.h"
 #include "CarSpawnController.generated.h"
 
@@ -35,13 +34,14 @@ public:
 	static TArray<FString> CarBpPaths;
 
 protected:
-	UPeriodicTimer* _Timer;
 	bool _IsNight = false;
+	bool _TimerRunOut = false;
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 	virtual void _RoundSetUp();
+	virtual void _TimerAction();
 	bool _CanSourcesSpawn();
 	TSubclassOf<ACar> _GetRandomCarClass();
 

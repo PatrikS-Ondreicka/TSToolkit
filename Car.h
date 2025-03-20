@@ -133,7 +133,7 @@ protected:
 	);
 
 	UFUNCTION()
-	virtual void _OnEndOverlap(
+	virtual void _OnEndSafeBoxOverlap(
 		UPrimitiveComponent* OverlappedComponent,
 		AActor* OtherActor,
 		UPrimitiveComponent* OtherComp,

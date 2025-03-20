@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "PeriodicTimer.h"
 #include "WeatherController.generated.h"
 
 UENUM()
@@ -116,11 +115,6 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = "Sky Default Values")
 	float OvercastRayleighScattering = 0.0f;
 
-protected:
-	UPeriodicTimer* _DaytimeChangeTimer;
-	UPeriodicTimer* _OvercastChangeTimer;
-	UPeriodicTimer* _RainChangeTimer;
-
 private:
 	void _SetDay(EOvercastTypes overcast);
 	void _SetNight(EOvercastTypes overcast);
@@ -131,8 +125,15 @@ private:
 	void _InitVolumetricCloud();
 	void _SetRain();
 	void _SetNoRain();
-	bool _HandleTimer(UPeriodicTimer* timer, float deltaTime);
+	void _SetUpTimers();
 
+	// Timer methods
+	void _ResetTimer(float Rate, void(AWeatherController::* InTimerFunction)());
+
+	// Timer action methods
+	void _ChangeDayTimeAction();
+	void _ChangeOvercastAction();
+	void _ChangeRainAction();
 protected:
 	virtual void BeginPlay() override;
 

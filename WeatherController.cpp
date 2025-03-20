@@ -31,11 +31,27 @@ AWeatherController::AWeatherController()
 	RainComponent = CreateDefaultSubobject<UNiagaraComponent>(TEXT("Rain component"));
 	RainComponent->bAutoActivate = true;
 	_InitVolumetricCloud();
+}
 
-	// Timer settings
-	_DaytimeChangeTimer = NewObject<UPeriodicTimer>();
-	_OvercastChangeTimer = NewObject<UPeriodicTimer>();
-	_RainChangeTimer = NewObject<UPeriodicTimer>();
+void AWeatherController::_ChangeDayTimeAction()
+{
+	auto nextState = GetNextDaytimeType(CurrentDayTime);
+	SetWeather(nextState, CurrentOvercast);
+	_ResetTimer(ChangeDayTimeRate, &AWeatherController::_ChangeDayTimeAction);
+}
+
+void AWeatherController::_ChangeOvercastAction()
+{
+	auto nextState = GetNextOvercastType(CurrentOvercast);
+	SetWeather(CurrentDayTime, nextState);
+	_ResetTimer(ChangeOvercastRate, &AWeatherController::_ChangeOvercastAction);
+}
+
+void AWeatherController::_ChangeRainAction()
+{
+	auto nextState = GetNextRainType(CurrentRain);
+	SetRain(nextState);
+	_ResetTimer(ChangeRainRate, &AWeatherController::_ChangeRainAction);
 }
 
 // Called when the game starts or when spawned
@@ -45,57 +61,13 @@ void AWeatherController::BeginPlay()
 	SetWeather(CurrentDayTime, CurrentOvercast);
 	SetRain(CurrentRain);
 	RainComponent->ActivateSystem();
-	_DaytimeChangeTimer->SetInitValue(ChangeDayTimeRate);
-	_OvercastChangeTimer->SetInitValue(ChangeOvercastRate);
-	_RainChangeTimer->SetInitValue(ChangeRainRate);
+	_SetUpTimers();
 }
 
 // Called every frame
 void AWeatherController::Tick(float deltaTime)
 {
 	Super::Tick(deltaTime);
-	if (!(ChangeDayTime || ChangeOvercast || ChangeRain))
-	{
-		return;
-	}
-	EDayTimeTypes dayTime = CurrentDayTime;
-	EOvercastTypes overcast = CurrentOvercast;
-	ERainTypes rain = CurrentRain;
-
-	bool weatherChange = false;
-
-	if (ChangeDayTime)
-	{
-		if (_HandleTimer(_DaytimeChangeTimer, deltaTime))
-		{
-			dayTime = GetNextDaytimeType(CurrentDayTime);
-			weatherChange = true;
-		}
-	}
-
-	if (ChangeOvercast)
-	{
-		if (_HandleTimer(_OvercastChangeTimer, deltaTime))
-		{
-			overcast = GetNextOvercastType(CurrentOvercast);
-			weatherChange = true;
-		}
-	}
-
-	if (ChangeRain)
-	{
-		if (_HandleTimer(_RainChangeTimer, deltaTime))
-		{
-			rain = GetNextRainType(CurrentRain);
-			weatherChange = true;
-		}
-	}
-
-	if (weatherChange)
-	{
-		SetWeather(dayTime, overcast);
-		SetRain(rain);
-	}
 }
 
 void AWeatherController::OnConstruction(const FTransform& Transform)
@@ -253,19 +225,32 @@ void AWeatherController::_SetNoRain()
 	CurrentRain = ERainTypes::NoRain;
 }
 
-bool AWeatherController::_HandleTimer(UPeriodicTimer* timer, float deltaTime)
+void AWeatherController::_SetUpTimers()
 {
-	timer->DecrementCountdown(deltaTime);
-	bool currentState = timer->CountdownState();
-	if (currentState)
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Timers set up"));
+	if (ChangeDayTime)
 	{
-		timer->ResetCountdown();
+		_ResetTimer(ChangeDayTimeRate, &AWeatherController::_ChangeDayTimeAction);
 	}
-	return currentState;
+
+	if (ChangeOvercast)
+	{
+		_ResetTimer(ChangeOvercastRate, &AWeatherController::_ChangeOvercastAction);
+	}
+
+	if (ChangeRain)
+	{
+		_ResetTimer(ChangeRainRate, &AWeatherController::_ChangeRainAction);
+	}
+}
+
+void AWeatherController::_ResetTimer(float Rate, void(AWeatherController::* InTimerFunction)())
+{
+	FTimerHandle timerHandle;
+	GetWorldTimerManager().SetTimer(timerHandle, this, InTimerFunction, ChangeDayTimeRate, false);
 }
 
 // Enum helper functions
-
 EDayTimeTypes GetNextDaytimeType(EDayTimeTypes type)
 {
 	if (type == EDayTimeTypes::Day)

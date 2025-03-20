@@ -53,7 +53,7 @@ void ACar::BeginPlay()
 	Super::BeginPlay();
 
 	SafeDistanceBox->OnComponentBeginOverlap.AddDynamic(this, &ACar::_OnBeginOverlap);
-	SafeDistanceBox->OnComponentEndOverlap.AddDynamic(this, &ACar::_OnEndOverlap);
+	SafeDistanceBox->OnComponentEndOverlap.AddDynamic(this, &ACar::_OnEndSafeBoxOverlap);
 }
 
 // Called every frame
@@ -142,8 +142,6 @@ void ACar::_HandleTrafficLightsBegin(ATrafficLights* TrafficLights)
 
 void ACar::_HandleCollisionBegin(ACar* OtherCar, UPrimitiveComponent* OtherComp)
 {
-	// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("{%p} - Car overlap begin"), this));
-
 	if (OtherCar == nullptr || OtherComp == nullptr)
 	{
 		return;
@@ -151,23 +149,25 @@ void ACar::_HandleCollisionBegin(ACar* OtherCar, UPrimitiveComponent* OtherComp)
 
 	if (_CollisionHandlingState)
 	{
-		// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("{%p} - In collision handling"), this));
 		_CanMove = true;
 		return;
 	}
 
 	if (OtherComp != OtherCar->SafeDistanceBox)
 	{
-		// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("{%p} - Natural stop"), this));
 		_CanMove = false;
 		return;
 	}	
 
 	if (_MovementPriority < OtherCar->GetMovementPriority())
 	{
-		// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("{%p} - Collision handling turned on"), this));
+		 // GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("{%p} - Collision handling turned on"), this));
 		_CollisionHandlingState = true;
 		_CanMove = true;
+	}
+	else
+	{
+		_CanMove = false;
 	}
 }
 
@@ -196,12 +196,12 @@ void ACar::_OnBeginOverlap(
 	const FHitResult& SweepResult)
 {
 	ACar* otherCar = Cast<ACar>(OtherActor);
-	if (otherCar == nullptr || otherCar == this)
+	if (otherCar != nullptr && otherCar != this)
 	{
+		_HandleCollisionBegin(otherCar, OtherComp);
 		return;
 	}
 
-	_HandleCollisionBegin(otherCar, OtherComp);
 
 	ATrafficLights* otherTf = Cast<ATrafficLights>(OtherActor);
 	if (otherTf != nullptr)
@@ -211,7 +211,7 @@ void ACar::_OnBeginOverlap(
 
 }
 
-void ACar::_OnEndOverlap(
+void ACar::_OnEndSafeBoxOverlap(
 	UPrimitiveComponent* OverlappedComponent,
 	AActor* OtherActor,
 	UPrimitiveComponent* OtherComp,
@@ -222,10 +222,7 @@ void ACar::_OnEndOverlap(
 	{
 		return;
 	}
-	if (OverlappedComponent == SafeDistanceBox)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("{%p} - Collision end"), this));
-		_HandleCollisionEnd(other, OtherComp);
-	}
+	// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("{%p} - Collision end"), this));
+	_HandleCollisionEnd(other, OtherComp);
 	
 }

@@ -6,7 +6,6 @@
 #include "SimConfig.h"
 #include "GameFramework/GameModeBase.h"
 #include "WeatherController.h"
-#include "PeriodicTimer.h"
 #include "TSToolkitGameMode.generated.h"
 
 /**
@@ -36,10 +35,10 @@ public:
 	bool IsMainMenu() const;
 	void LoadMainMenu();
 	void LoadLevel(USimConfig* Config);
-	bool bIsRunning = false;
 
 protected:
 	virtual void BeginPlay() override;
+	virtual void _EndLevel();
 
 private:
 	void _UIViewportSetup(UUserWidget* Widget);
@@ -50,7 +49,5 @@ private:
 	void _SetUpCarSpawnController(USimConfig* Config);
 	void _SetUpScreenshotController(USimConfig* Config);
 	void _SetUpWeatherController(USimConfig* Config);
-
-	UPeriodicTimer* _Timer;
 };
 
