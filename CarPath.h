@@ -18,12 +18,19 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Source Components")
 	class USplineComponent* Path;
 
+	UPROPERTY(EditAnywhere, Category = "Source Components")
+	class UStaticMeshComponent* StartMesh;
+
+	UPROPERTY(EditAnywhere, Category = "Source Components")
+	class UStaticMeshComponent* EndMesh;
+
 	UPROPERTY(EditAnywhere, Category = "Source Details")
 	float Probability = 0.0f;
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	void OnConstruction(const FTransform& Transform) override;
 
 public:
 	// Called every frame

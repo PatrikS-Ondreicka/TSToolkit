@@ -51,7 +51,8 @@ ACar::ACar()
 void ACar::BeginPlay()
 {
 	Super::BeginPlay();
-
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("{%p} - Begin play"), this));
+	SafeDistanceBox->SetGenerateOverlapEvents(true);
 	SafeDistanceBox->OnComponentBeginOverlap.AddDynamic(this, &ACar::_OnBeginOverlap);
 	SafeDistanceBox->OnComponentEndOverlap.AddDynamic(this, &ACar::_OnEndSafeBoxOverlap);
 }
@@ -198,10 +199,10 @@ void ACar::_OnBeginOverlap(
 	ACar* otherCar = Cast<ACar>(OtherActor);
 	if (otherCar != nullptr && otherCar != this)
 	{
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("{%p} - Collision"), this));
 		_HandleCollisionBegin(otherCar, OtherComp);
 		return;
 	}
-
 
 	ATrafficLights* otherTf = Cast<ATrafficLights>(OtherActor);
 	if (otherTf != nullptr)

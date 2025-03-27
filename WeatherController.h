@@ -125,7 +125,6 @@ private:
 	void _InitVolumetricCloud();
 	void _SetRain();
 	void _SetNoRain();
-	void _SetUpTimers();
 
 	// Timer methods
 	void _ResetTimer(float Rate, void(AWeatherController::* InTimerFunction)());
@@ -141,6 +140,7 @@ public:
 	virtual void Tick(float deltaTime) override;
 
 	void OnConstruction(const FTransform& Transform) override;
+	void SetUpTimers();
 
 	UFUNCTION(BlueprintCallable)
 	void SetWeather(EDayTimeTypes time, EOvercastTypes overcast);

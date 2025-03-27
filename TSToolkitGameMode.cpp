@@ -11,7 +11,7 @@
 #include "ScreenshotController.h"
 
 // Delete macro if testing of level isn't needed
-// #define TESTING
+#define TESTING
 
 typedef UGameplayStatics GS;
 
@@ -172,4 +172,5 @@ void ATSToolkitGameMode::_SetUpWeatherController(USimConfig* Config)
 	controller->ChangeOvercastRate = Config->ChangeOvercastRate;
 	controller->ChangeRain = Config->bIsChangeRain;
 	controller->ChangeRainRate = Config->ChangeRainRate;
+	controller->SetUpTimers();
 }

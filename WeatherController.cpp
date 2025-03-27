@@ -61,7 +61,7 @@ void AWeatherController::BeginPlay()
 	SetWeather(CurrentDayTime, CurrentOvercast);
 	SetRain(CurrentRain);
 	RainComponent->ActivateSystem();
-	_SetUpTimers();
+	SetUpTimers();
 }
 
 // Called every frame
@@ -225,9 +225,8 @@ void AWeatherController::_SetNoRain()
 	CurrentRain = ERainTypes::NoRain;
 }
 
-void AWeatherController::_SetUpTimers()
+void AWeatherController::SetUpTimers()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Timers set up"));
 	if (ChangeDayTime)
 	{
 		_ResetTimer(ChangeDayTimeRate, &AWeatherController::_ChangeDayTimeAction);

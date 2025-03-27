@@ -21,7 +21,7 @@ void UMainMenu::StartButtonClick()
 	_SimConfig->SaveConfig();
 	if (tsToolkitGameMode)
 	{
-		GS::OpenLevel(world, FName(*levelPath));
+		GS::OpenLevel(world, FName(*levelPath), false);
 	}
 	else
 	{

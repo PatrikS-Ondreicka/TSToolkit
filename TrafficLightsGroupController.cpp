@@ -24,8 +24,13 @@ void ATrafficLightsGroupController::BeginPlay()
 	if (TrafficLightsGroups.Num() > 0)
 	{
 		_CurrentGroupIndex = 0;
-		_CurrentGroupCountDown = GetCurrentGroup()->StateChangeTime;
 		_SetStateForGroup(_CurrentGroupIndex, ETrafficLightsStates::Green);
+		_SetUpTimerGroup(GetCurrentGroup()->StateChangeTime);
+	}
+
+	if (StateChangeDelay > 0.0f)
+	{
+		_DelayRunOut = false;
 	}
 }
 
@@ -33,18 +38,12 @@ void ATrafficLightsGroupController::BeginPlay()
 void ATrafficLightsGroupController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	_CurrentGroupCountDown -= DeltaTime;
-	if (_CurrentGroupCountDown <= 0)
-	{
-		NextGroup();
-	}
 }
 
 void ATrafficLightsGroupController::NextGroup()
 {
 	_SetStateForGroup(_CurrentGroupIndex, ETrafficLightsStates::Red);
 	_CurrentGroupIndex = (_CurrentGroupIndex + 1) % TrafficLightsGroups.Num();
-	_CurrentGroupCountDown = GetCurrentGroup()->StateChangeTime;
 	_SetStateForGroup(_CurrentGroupIndex, ETrafficLightsStates::Green);
 }
 
@@ -75,4 +74,40 @@ void ATrafficLightsGroupController::_SetStateForGroup(int Index, ETrafficLightsS
 	}
 
 	TrafficLightsGroups[Index]->SetGroupState(State);
+}
+
+void ATrafficLightsGroupController::_TimerDelayRunOutAction()
+{
+	_DelayRunOut = true;
+	_TimerGroupRunOutAction();
+}
+
+void ATrafficLightsGroupController::_TimerGroupRunOutAction()
+{
+	if (_DelayRunOut)
+	{
+		NextGroup();
+		_SetUpTimerGroup(GetCurrentGroup()->StateChangeTime);
+	}
+	else
+	{
+		_SetStateForGroup(_CurrentGroupIndex, ETrafficLightsStates::Red);
+		_SetUpDelayTimer();
+	}
+}
+
+void ATrafficLightsGroupController::_SetUpTimerGroup(float Time)
+{
+	FTimerHandle timerHandle;
+	GetWorldTimerManager().SetTimer(timerHandle, this, &ATrafficLightsGroupController::_TimerGroupRunOutAction, Time, false);
+}
+
+void ATrafficLightsGroupController::_SetUpDelayTimer()
+{
+	if (StateChangeDelay == 0)
+	{
+		return;
+	}
+	FTimerHandle timerHandle;
+	GetWorldTimerManager().SetTimer(timerHandle, this, &ATrafficLightsGroupController::_TimerDelayRunOutAction, StateChangeDelay, false);
 }

@@ -22,11 +22,14 @@ public:
 	TArray<ATrafficLightsGroup*> TrafficLightsGroups;
 
 	UPROPERTY(EditAnywhere, Category = "Controller Details")
+	float StateChangeDelay = 0.0f;
+
+	UPROPERTY(EditAnywhere, Category = "Controller Details")
 	bool bRegisterAllAtBeginPlay = true;
 
 private:
 	int _CurrentGroupIndex = 0;
-	float _CurrentGroupCountDown = 0.0f;
+	bool _DelayRunOut = true;
 
 protected:
 	// Called when the game starts or when spawned
@@ -44,21 +47,18 @@ public:
 		return _CurrentGroupIndex;
 	}
 
-	FORCEINLINE float GetCurrentGroupCountDown()
-	{
-		return _CurrentGroupCountDown;
-	}
-
 	FORCEINLINE ATrafficLightsGroup* GetCurrentGroup()
 	{
-		if (TrafficLightsGroups.Num() <= 0)
-		{
-			return nullptr;
-		}
-		return TrafficLightsGroups[_CurrentGroupIndex];
+		return (TrafficLightsGroups.Num() <= 0) 
+			? nullptr
+			: TrafficLightsGroups[_CurrentGroupIndex];
 	}
 
 private:
 	void _RegisterAllGroups();
 	void _SetStateForGroup(int Index, ETrafficLightsStates State);
+	void _TimerDelayRunOutAction();
+	void _TimerGroupRunOutAction();
+	void _SetUpTimerGroup(float Time);
+	void _SetUpDelayTimer();
 };
