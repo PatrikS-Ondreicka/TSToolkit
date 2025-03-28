@@ -8,6 +8,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Engine/World.h"
 #include "Lamp.h"
+#include "Puddle.h"
 #include "CarSpawnController.h"
 #include "NiagaraFunctionLibrary.h"
 #include "NiagaraComponent.h"
@@ -64,6 +65,32 @@ void AWeatherController::BeginPlay()
 	SetUpTimers();
 }
 
+void AWeatherController::_PerformActionOnAllActors(TSubclassOf<AActor> ActorClass, void(*Action)(AActor*))
+{
+	TArray<AActor*> found;
+	GS::GetAllActorsOfClass(GetWorld(), ActorClass, found);
+	for (AActor* actor : found)
+	{
+		if (actor)
+		{
+			Action(actor);
+		}
+	}
+}
+
+void AWeatherController::_SetStateOnAllActors(TSubclassOf<AActor> ActorClass, bool state, void(*Action)(AActor*, bool))
+{
+	TArray<AActor*> found;
+	GS::GetAllActorsOfClass(GetWorld(), ActorClass, found);
+	for (AActor* actor : found)
+	{
+		if (actor)
+		{
+			Action(actor, state);
+		}
+	}
+}
+
 // Called every frame
 void AWeatherController::Tick(float deltaTime)
 {
@@ -110,7 +137,7 @@ void AWeatherController::_SetDay(EOvercastTypes overcast)
 {
 	float sunIntensity = (overcast == EOvercastTypes::Clear) ? DaySunIntensity : DayOvercastIntensity;
 	Sun->SetIntensity(sunIntensity);
-	Sun->SetLightSourceAngle(2.0f);
+	Sun->SetLightSourceAngle(0.54f);
 	FRotator newRotation = FRotator(270.0f, -80.0f, 270.0f);
 	Sun->SetWorldRotation(newRotation);
 	_SetNightForControllers(false);
@@ -123,7 +150,7 @@ void AWeatherController::_SetNight(EOvercastTypes overcast)
 {
 	float sunIntensity = (overcast == EOvercastTypes::Clear) ? NightSunIntensity : NightOvercastIntensity;
 	Sun->SetIntensity(sunIntensity);
-	Sun->SetLightSourceAngle(2.0f);
+	Sun->SetLightSourceAngle(0.54f);
 	FRotator newRotation = FRotator(270.0f, -80.0f, 270.0f);
 	Sun->SetWorldRotation(newRotation);
 	_SetNightForControllers(true);
@@ -157,44 +184,33 @@ void AWeatherController::_SetCloudOvercast(EOvercastTypes overcast)
 
 void AWeatherController::_TurnOnLamps()
 {
-	TArray<AActor*> found;
-	GS::GetAllActorsOfClass(GetWorld(), ALamp::StaticClass(), found);
-	for (AActor* actor : found)
-	{
-		ALamp* lamp = Cast<ALamp>(actor);
-		if (lamp && lamp->bTurnOnWhenNight)
+	_PerformActionOnAllActors(ALamp::StaticClass(), [](AActor* actor)
 		{
-			lamp->TurnOn();
-		}
-	}
+			ALamp* lamp = Cast<ALamp>(actor);
+			if (lamp) lamp->TurnOn();
+		});
 }
 
 void AWeatherController::_TurnOffLamps()
 {
-	TArray<AActor*> found;
-	GS::GetAllActorsOfClass(GetWorld(), ALamp::StaticClass(), found);
-	for (AActor* actor : found)
-	{
-		ALamp* lamp = Cast<ALamp>(actor);
-		if (lamp)
+	_PerformActionOnAllActors(ALamp::StaticClass(), [](AActor* actor)
 		{
-			lamp->TurnOff();
-		}
-	}
+			ALamp* lamp = Cast<ALamp>(actor);
+			if (lamp) lamp->TurnOff();
+		});
 }
 
 void AWeatherController::_SetNightForControllers(bool state)
 {
-	TArray<AActor*> found;
-	GS::GetAllActorsOfClass(GetWorld(), ACarSpawnController::StaticClass(), found);
-	for (AActor* actor : found)
-	{
-		ACarSpawnController* controller = Cast<ACarSpawnController>(actor);
-		if (controller)
+	_SetStateOnAllActors(ACarSpawnController::StaticClass(), state, 
+		[](AActor* actor, bool newState) 
 		{
-			controller->SetNight(state);
-		}
-	}
+			ACarSpawnController* controller = Cast<ACarSpawnController>(actor);
+			if (controller)
+			{
+				controller->SetNight(newState);
+			}
+		});
 }
 
 void AWeatherController::_InitVolumetricCloud()
@@ -213,6 +229,7 @@ void AWeatherController::_SetRain()
 	{
 		RainComponent->SetVisibility(true);
 	}
+	_SetPuddlesVisiblity(true);
 	CurrentRain = ERainTypes::Rain;
 }
 
@@ -222,7 +239,17 @@ void AWeatherController::_SetNoRain()
 	{
 		RainComponent->SetVisibility(false);
 	}
+	_SetPuddlesVisiblity(false);
 	CurrentRain = ERainTypes::NoRain;
+}
+
+void AWeatherController::_SetPuddlesVisiblity(bool State)
+{
+	_SetStateOnAllActors(APuddle::StaticClass(), State, [](AActor* actor, bool newState) 
+		{
+			APuddle* puddle = Cast<APuddle>(actor);
+			if (puddle) puddle->SetActorHiddenInGame(!newState);
+		});
 }
 
 void AWeatherController::SetUpTimers()

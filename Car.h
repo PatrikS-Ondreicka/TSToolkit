@@ -58,6 +58,9 @@ protected:
 	bool _CanMove = true;
 	float _DistanceAlongSpline = 0;
 
+private:
+	FVector _MovementOffset = FVector::ZeroVector;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -121,6 +124,7 @@ protected:
 	void _HandleCollisionBegin(ACar* OtherCar, class UPrimitiveComponent* OtherComp);
 	void _HandleCollisionEnd(ACar* OtherCar, class UPrimitiveComponent* OtherComp);
 	void _SetMovementPriority();
+	FVector _CreateRandomOffset();
 
 	UFUNCTION()
 	virtual void _OnBeginOverlap(

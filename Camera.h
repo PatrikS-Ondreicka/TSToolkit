@@ -39,6 +39,6 @@ public:
 	UFUNCTION()
 	void TakeScreenshot();
 
-private:
+protected:
 	void _AutoAction(float DeltaTime);
 };

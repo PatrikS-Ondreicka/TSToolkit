@@ -125,6 +125,7 @@ private:
 	void _InitVolumetricCloud();
 	void _SetRain();
 	void _SetNoRain();
+	void _SetPuddlesVisiblity(bool State);
 
 	// Timer methods
 	void _ResetTimer(float Rate, void(AWeatherController::* InTimerFunction)());
@@ -133,8 +134,12 @@ private:
 	void _ChangeDayTimeAction();
 	void _ChangeOvercastAction();
 	void _ChangeRainAction();
+
 protected:
 	virtual void BeginPlay() override;
+
+	void _PerformActionOnAllActors(TSubclassOf<AActor> ActorClass, void (*Action)(AActor*));
+	void _SetStateOnAllActors(TSubclassOf<AActor> ActorClass, bool state, void (*Action)(AActor*, bool));
 
 public:
 	virtual void Tick(float deltaTime) override;

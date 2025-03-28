@@ -51,7 +51,7 @@ ACar::ACar()
 void ACar::BeginPlay()
 {
 	Super::BeginPlay();
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("{%p} - Begin play"), this));
+	_MovementOffset = _CreateRandomOffset();
 	SafeDistanceBox->SetGenerateOverlapEvents(true);
 	SafeDistanceBox->OnComponentBeginOverlap.AddDynamic(this, &ACar::_OnBeginOverlap);
 	SafeDistanceBox->OnComponentEndOverlap.AddDynamic(this, &ACar::_OnEndSafeBoxOverlap);
@@ -113,7 +113,7 @@ void ACar::_MoveToLocation(FVector Location, float Speed, float DeltaTime)
 void ACar::_MoveAlongSpline(USplineComponent* Spline, float Speed, float DeltaTime)
 {
 	float newDistance = _DistanceAlongSpline + Speed * DeltaTime;
-	FVector newLocation = Spline->GetLocationAtDistanceAlongSpline(newDistance, ESplineCoordinateSpace::World);
+	FVector newLocation = Spline->GetLocationAtDistanceAlongSpline(newDistance, ESplineCoordinateSpace::World) + _MovementOffset;
 	FRotator newRotation = Spline->GetRotationAtDistanceAlongSpline(newDistance, ESplineCoordinateSpace::World);
 	SetActorLocation(newLocation);
 	SetActorRotation(newRotation);
@@ -162,7 +162,6 @@ void ACar::_HandleCollisionBegin(ACar* OtherCar, UPrimitiveComponent* OtherComp)
 
 	if (_MovementPriority < OtherCar->GetMovementPriority())
 	{
-		 // GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("{%p} - Collision handling turned on"), this));
 		_CollisionHandlingState = true;
 		_CanMove = true;
 	}
@@ -186,6 +185,11 @@ void ACar::_HandleCollisionEnd(ACar* OtherCar, class UPrimitiveComponent* OtherC
 void ACar::_SetMovementPriority()
 {
 	_MovementPriority = UKismetMathLibrary::RandomInteger(MAX_MOVEMENT_PRIORITY);
+}
+
+FVector ACar::_CreateRandomOffset()
+{
+	return FVector(FMath::RandRange(-50.0f, 50.0f), FMath::RandRange(-50.0f, 50.0f), 0.0f);
 }
 
 void ACar::_OnBeginOverlap(
