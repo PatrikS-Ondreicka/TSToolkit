@@ -62,6 +62,7 @@ void AWeatherController::BeginPlay()
 	SetWeather(CurrentDayTime, CurrentOvercast);
 	SetRain(CurrentRain);
 	RainComponent->ActivateSystem();
+	RainComponent->bAutoActivate = true;
 	SetUpTimers();
 }
 

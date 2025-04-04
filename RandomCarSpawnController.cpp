@@ -14,11 +14,8 @@ void ARandomCarSpawnController::Tick(float DeltaTime)
 		return;
 	}
 
-	if (_CanSourcesSpawn())
-	{
-		_SpawnCar();
-		_RoundSetUp();
-	}
+	_SpawnCar();
+	_RoundSetUp();
 }
 
 void ARandomCarSpawnController::BeginPlay()

@@ -11,7 +11,7 @@
 #include "ScreenshotController.h"
 
 // Delete macro if testing of level isn't needed
-#define TESTING
+// #define TESTING
 
 typedef UGameplayStatics GS;
 
@@ -38,6 +38,8 @@ void ATSToolkitGameMode::BeginPlay()
 		USimConfig* Config = NewObject<USimConfig>();
 		Config->LoadConfig(USimConfig::ConfigFileName);
 		LoadLevel(Config);
+		UWorld* world = GetWorld();
+		world->EnsureCollisionTreeIsBuilt();
 #endif
 	}
 }
@@ -77,7 +79,6 @@ void ATSToolkitGameMode::LoadMainMenu()
 void ATSToolkitGameMode::LoadLevel(USimConfig* Config)
 {
 	_LevelViewportSetup();
-	UWorld* world = GetWorld();
 	_SetUpLevel(Config);
 }
 

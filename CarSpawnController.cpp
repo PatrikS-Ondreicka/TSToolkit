@@ -31,7 +31,7 @@ TArray<FString> ACarSpawnController::CarBpPaths
 	TEXT("/Game/BP/Cars/Suv/BP_BrownSuv.BP_BrownSuv_C"),
 	TEXT("/Game/BP/Cars/Suv/BP_BlackSuv.BP_BlackSuv_C"),
 	// Van
-	TEXT("/Game/BP/Cars/Van/BP_Van_C"),
+	TEXT("/Game/BP/Cars/Van/BP_Van.BP_Van_C"),
 	TEXT("/Game/BP/Cars/Van/BP_YellowVan.BP_YellowVan_C"),
 	TEXT("/Game/BP/Cars/Van/BP_WhiteVan.BP_WhiteVan_C")
 };

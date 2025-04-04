@@ -21,11 +21,8 @@ void APeriodicCarSpawnController::Tick(float DeltaTime)
 		return;
 	}
 
-	if (_CanSourcesSpawn())
-	{
-		_SpawnAtAllSources();
-		_RoundSetUp();
-	}
+	_SpawnAtAllSources();
+	_RoundSetUp();
 }
 
 void APeriodicCarSpawnController::_SpawnAtAllSources()

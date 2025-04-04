@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
+#include "CriticalZone.h"
 #include "Car.generated.h"
 
 UCLASS(Blueprintable)
@@ -48,6 +49,7 @@ protected:
 	class ATrafficLights* _LastTrafficLights;
 	int _MovementPriority = 100;
 	bool _CollisionHandlingState = false;
+	bool _WaitingForCriticalZone = false;
 
 	// Path attributes
 	FVector _CurrentDestination;
@@ -60,9 +62,10 @@ protected:
 
 private:
 	FVector _MovementOffset = FVector::ZeroVector;
+	ACriticalZone* _CurrentCriticalZone = nullptr;
 
 protected:
-	// Called when the game starts or when spawned
+	// 	Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 public:
@@ -89,6 +92,11 @@ public:
 	FORCEINLINE int GetMovementPriority() const
 	{
 		return _MovementPriority;
+	}
+
+	FORCEINLINE class ACarPath* GetPath() const
+	{
+		return _Path;
 	}
 
 	// Inline setters
@@ -123,11 +131,15 @@ protected:
 	void _HandleTrafficLightsBegin(class ATrafficLights* TrafficLights);
 	void _HandleCollisionBegin(ACar* OtherCar, class UPrimitiveComponent* OtherComp);
 	void _HandleCollisionEnd(ACar* OtherCar, class UPrimitiveComponent* OtherComp);
+	void _HandleCollisionCriticalZoneBegin(ACriticalZone* Zone);
+	void _HandleCollisionCriticalZoneEnd(ACriticalZone* Zone);
+	void _ReserveCriticalZone(ACriticalZone* Zone);
+	void _EndCriticalZoneReservation(ACriticalZone* Zone);
 	void _SetMovementPriority();
 	FVector _CreateRandomOffset();
 
-	UFUNCTION()
-	virtual void _OnBeginOverlap(
+	UFUNCTION(BlueprintCallable)
+	virtual void _OnSafeBoxBeginOverlap(
 		UPrimitiveComponent* OverlappedComponent,
 		AActor* OtherActor,
 		UPrimitiveComponent* OtherComp,
@@ -136,8 +148,16 @@ protected:
 		const FHitResult& SweepResult
 	);
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	virtual void _OnEndSafeBoxOverlap(
+		UPrimitiveComponent* OverlappedComponent,
+		AActor* OtherActor,
+		UPrimitiveComponent* OtherComp,
+		int32 OtherBodyIndex
+	);
+
+	UFUNCTION(BlueprintCallable)
+	virtual void _OnRootBoxEndOverlap(
 		UPrimitiveComponent* OverlappedComponent,
 		AActor* OtherActor,
 		UPrimitiveComponent* OtherComp,

@@ -15,24 +15,40 @@ public:
 	// Sets default values for this actor's properties
 	ACarPath();
 
-	UPROPERTY(EditAnywhere, Category = "Source Components")
+	UPROPERTY(EditAnywhere, Category = "Path Components")
 	class USplineComponent* Path;
 
-	UPROPERTY(EditAnywhere, Category = "Source Components")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Path Components")
 	class UStaticMeshComponent* StartMesh;
 
-	UPROPERTY(EditAnywhere, Category = "Source Components")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Path Components")
 	class UStaticMeshComponent* EndMesh;
 
-	UPROPERTY(EditAnywhere, Category = "Source Details")
+	UPROPERTY(EditAnywhere, Category = "Path Details")
 	float Probability = 0.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Path Details")
+	TArray<ACarPath*> RelatedPaths;
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 	void OnConstruction(const FTransform& Transform) override;
+	// void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
 
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	UFUNCTION(BlueprintCallable, Category = "Path Relations")
+	bool IsPathRelated(ACarPath* OtherPath);
+
+	UFUNCTION(BlueprintCallable, Category = "Path Relations")
+	void AddPathRelation(ACarPath* OtherPath);
+
+	UFUNCTION(BlueprintCallable, Category = "Path Relations")
+	void RemovePathRelation(ACarPath* OtherPath);
+
+	UFUNCTION(BlueprintCallable, Category = "Path Relations")
+	void UpdateRelations();
 };

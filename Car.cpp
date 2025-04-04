@@ -10,6 +10,7 @@
 #include "Kismet/KismetMathLibrary.h"
 
 #define MAX_MOVEMENT_PRIORITY 1000000000
+#define PATH_VARIATON_HALF_RANGE 20
 
 #define MSG(str) GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, str);
 #define ERROR_MSG(str) GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, str);
@@ -53,14 +54,16 @@ void ACar::BeginPlay()
 	Super::BeginPlay();
 	_MovementOffset = _CreateRandomOffset();
 	SafeDistanceBox->SetGenerateOverlapEvents(true);
-	SafeDistanceBox->OnComponentBeginOverlap.AddDynamic(this, &ACar::_OnBeginOverlap);
+	SafeDistanceBox->OnComponentBeginOverlap.AddDynamic(this, &ACar::_OnSafeBoxBeginOverlap);
 	SafeDistanceBox->OnComponentEndOverlap.AddDynamic(this, &ACar::_OnEndSafeBoxOverlap);
+	CarBoxRoot->OnComponentEndOverlap.AddDynamic(this, &ACar::_OnRootBoxEndOverlap);
 }
 
 // Called every frame
 void ACar::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
 	if (_ReachedDestination)
 	{
 		K2_DestroyActor();
@@ -75,6 +78,26 @@ void ACar::Tick(float DeltaTime)
 			return;
 		}
 		_MoveAlongSpline(_Path->Path, StaticSpeed, DeltaTime);
+	}
+
+	if (!_WaitingForCriticalZone)
+	{
+		return;
+	}
+
+	if (!_CurrentCriticalZone)
+	{
+		_WaitingForCriticalZone = false;
+		return;
+	}
+
+	if (_CurrentCriticalZone->IsReserved())
+	{
+		return;
+	}
+	else
+	{
+		_ReserveCriticalZone(_CurrentCriticalZone);
 	}
 }
 
@@ -182,6 +205,68 @@ void ACar::_HandleCollisionEnd(ACar* OtherCar, class UPrimitiveComponent* OtherC
 	_CollisionHandlingState = false;
 }
 
+void ACar::_HandleCollisionCriticalZoneBegin(ACriticalZone* Zone)
+{
+	if (Zone == nullptr)
+	{
+		return;
+	}
+	if (Zone->IsReserved() && !Zone->IsReservedForPath(_Path))
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Crit wait"));
+		_CurrentCriticalZone = Zone;
+		_WaitingForCriticalZone = true;
+		_CanMove = false;
+		return;
+	}
+	_ReserveCriticalZone(Zone);
+}
+
+void ACar::_HandleCollisionCriticalZoneEnd(ACriticalZone* Zone)
+{
+	if (Zone == nullptr)
+	{
+		return;
+	}
+	if (!Zone->IsReserved())
+	{
+		return;
+	}
+	Zone->TryEndReservation();
+	_CanMove = true;
+}
+
+void ACar::_ReserveCriticalZone(ACriticalZone* Zone)
+{
+	if (Zone == nullptr)
+	{
+		return;
+	}
+
+	if (Zone->IsReserved())
+	{
+		return;
+	}
+
+	Zone->SetReserved(_Path);
+	_WaitingForCriticalZone = false;
+	_CanMove = true;
+}
+
+void ACar::_EndCriticalZoneReservation(ACriticalZone* Zone)
+{
+	if (Zone == nullptr)
+	{
+		return;
+	}
+	if (!Zone->IsReserved())
+	{
+		return;
+	}
+	Zone->SetReserved(nullptr);
+	_CanMove = true;
+}
+
 void ACar::_SetMovementPriority()
 {
 	_MovementPriority = UKismetMathLibrary::RandomInteger(MAX_MOVEMENT_PRIORITY);
@@ -189,10 +274,11 @@ void ACar::_SetMovementPriority()
 
 FVector ACar::_CreateRandomOffset()
 {
-	return FVector(FMath::RandRange(-50.0f, 50.0f), FMath::RandRange(-50.0f, 50.0f), 0.0f);
+	return FVector(FMath::RandRange(-PATH_VARIATON_HALF_RANGE, PATH_VARIATON_HALF_RANGE),
+		FMath::RandRange(-PATH_VARIATON_HALF_RANGE, PATH_VARIATON_HALF_RANGE), 0.0f);
 }
 
-void ACar::_OnBeginOverlap(
+void ACar::_OnSafeBoxBeginOverlap(
 	UPrimitiveComponent* OverlappedComponent,
 	AActor* OtherActor,
 	UPrimitiveComponent* OtherComp,
@@ -203,7 +289,7 @@ void ACar::_OnBeginOverlap(
 	ACar* otherCar = Cast<ACar>(OtherActor);
 	if (otherCar != nullptr && otherCar != this)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("{%p} - Collision"), this));
+		// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("{%p} - Collision"), this));
 		_HandleCollisionBegin(otherCar, OtherComp);
 		return;
 	}
@@ -214,6 +300,11 @@ void ACar::_OnBeginOverlap(
 		_HandleTrafficLightsBegin(otherTf);
 	}
 
+	ACriticalZone* otherZone = Cast<ACriticalZone>(OtherActor);
+	if (otherZone != nullptr)
+	{
+		_HandleCollisionCriticalZoneBegin(otherZone);
+	}
 }
 
 void ACar::_OnEndSafeBoxOverlap(
@@ -230,4 +321,16 @@ void ACar::_OnEndSafeBoxOverlap(
 	// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("{%p} - Collision end"), this));
 	_HandleCollisionEnd(other, OtherComp);
 	
+}
+
+void ACar::_OnRootBoxEndOverlap(UPrimitiveComponent* OverlappedComponent,
+	AActor* OtherActor,
+	UPrimitiveComponent* OtherComp,
+	int32 OtherBodyIndex)
+{
+	ACriticalZone* otherZone = Cast<ACriticalZone>(OtherActor);
+	if (otherZone != nullptr)
+	{
+		_HandleCollisionCriticalZoneEnd(otherZone);
+	}
 }
